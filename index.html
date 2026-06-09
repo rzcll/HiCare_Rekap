@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <base target="_top">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+      
+      body { 
+        font-family: 'Outfit', sans-serif; 
+        /* Latar belakang gradien yang lebih lembut dan modern */
+        background: linear-gradient(135deg, #eef2f7 0%, #e2e8f0 100%);
+        margin: 0;
+      }
+      
+      /* Desain Glassmorphism yang lebih premium */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .nav-item {
+        position: relative;
+        font-weight: 600;
+        color: #6b7280; /* Gray 500 */
+        transition: all 0.3s ease;
+      }
+
+      .nav-item.active {
+        color: #4f46e5; /* Indigo 600 */
+      }
+
+      /* Indikator bawah tab yang lebih menarik */
+      .nav-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #4f46e5, #818cf8);
+        border-radius: 3px 3px 0 0;
+      }
+
+      /* Efek hover untuk input dan select */
+      .form-input:hover, .form-select:hover {
+        border-color: #a5b4fc; /* Indigo 300 */
+        box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.2);
+      }
+
+      /* Efek fokus yang lebih menonjol */
+      .form-input:focus, .form-select:focus {
+        border-color: #4f46e5; /* Indigo 600 */
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25) !important;
+      }
+
+      .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      
+      .loader-spin { animation: spin 1s linear infinite; }
+      @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body class="min-h-screen text-gray-800 flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50 border-b border-gray-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-indigo-600 to-blue-500 text-white p-2.5 rounded-xl shadow-sm">
+              <i class="fas fa-notes-medical text-xl"></i>
+            </div>
+            <span class="font-bold text-2xl tracking-tight text-gray-900">E-Rekap Puskesmas</span>
+          </div>
+          <div class="flex space-x-8 h-full">
+            <button onclick="switchTab('input')" id="tab-input" class="nav-item active flex items-center px-2">
+              <i class="fas fa-pen-to-square mr-2 text-lg"></i> Input Data
+            </button>
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item flex items-center px-2">
+              <i class="fas fa-chart-pie mr-2 text-lg"></i> Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-8">
+      <div class="w-full max-w-4xl">
+
+        <!-- ================= VIEW 1: INPUT DATA ================= -->
+        <div id="view-input" class="glass-card p-8 sm:p-12 fade-in max-w-lg mx-auto">
+          <div class="text-center mb-10">
+            <h2 class="text-3xl font-extrabold text-gray-900">Form Laporan Mingguan</h2>
+            <p class="text-base text-gray-600 mt-3">Silahkan masukkan data rekapitulasi terbaru dengan lengkap.</p>
+          </div>
+
+          <form id="rekapForm" class="space-y-8" onsubmit="handleFormSubmit(event)">
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-3">Nama Puskesmas</label>
+              <div class="relative">
+                <select id="puskesmas" required class="form-select w-full pl-5 pr-10 py-4 rounded-xl border-2 border-gray-200 outline-none transition-all appearance-none bg-white/70 text-gray-700 font-medium cursor-pointer">
+                  <option value="" disabled selected>Memuat data...</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-indigo-500">
+                  <i class="fas fa-chevron-down text-base"></i>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-3">Data Rekapitulasi</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none text-indigo-500">
+                  <i class="fas fa-hashtag text-lg"></i>
+                </div>
+                <input type="number" id="nilai" required placeholder="Masukkan jumlah/nilai..." class="form-input w-full pl-12 pr-5 py-4 rounded-xl border-2 border-gray-200 outline-none transition-all bg-white/70 text-gray-700 font-medium">
+              </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/40 flex items-center justify-center gap-2 mt-6 text-lg transform hover:-translate-y-1">
+              <i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- ================= VIEW 2: DASHBOARD ================= -->
+        <div id="view-dashboard" class="hidden fade-in">
+          
+          <div class="glass-card p-6 sm:p-8 mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-6">
+              <div>
+                <h2 class="text-3xl font-extrabold text-gray-900">Capaian Grafik</h2>
+                <p class="text-base text-gray-600 mt-2">Visualisasi data mingguan per Puskesmas</p>
+              </div>
+              <div class="w-full sm:w-80 relative">
+                <select id="dashPuskesmas" onchange="renderChart()" class="form-select w-full pl-5 pr-10 py-3 rounded-xl border-2 border-gray-200 outline-none bg-white/70 text-gray-700 font-medium cursor-pointer">
+                  <option value="" disabled selected>Pilih Puskesmas...</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-indigo-500"><i class="fas fa-filter text-base"></i></div>
+              </div>
+            </div>
+
+            <!-- Area Canvas Chart -->
+            <div class="relative h-[350px] sm:h-[450px] w-full flex items-center justify-center bg-white/60 rounded-2xl border-2 border-gray-100 p-4 shadow-inner" id="chartContainer">
+              <p id="chartEmptyState" class="text-gray-400 flex flex-col items-center gap-3">
+                <i class="fas fa-chart-simple text-5xl text-indigo-200"></i>
+                <span class="text-lg font-medium">Pilih puskesmas untuk melihat grafik</span>
+              </p>
+              <canvas id="myChart" class="hidden"></canvas>
+            </div>
+          </div>
+
+          <!-- Summary Cards Bawah -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="summaryCards" style="display: none;">
+            <div class="glass-card p-8 flex items-center gap-6 transform transition hover:-translate-y-1 hover:shadow-xl">
+              <div class="bg-gradient-to-tr from-blue-100 to-blue-50 text-blue-600 p-5 rounded-2xl shadow-sm"><i class="fas fa-calendar-check text-3xl"></i></div>
+              <div>
+                <p class="text-base text-gray-500 font-bold uppercase tracking-wider">Total Minggu Dilaporkan</p>
+                <p class="text-4xl font-extrabold text-gray-900 mt-1" id="sumTotalMinggu">0</p>
+              </div>
+            </div>
+            <div class="glass-card p-8 flex items-center gap-6 transform transition hover:-translate-y-1 hover:shadow-xl">
+              <div class="bg-gradient-to-tr from-emerald-100 to-emerald-50 text-emerald-600 p-5 rounded-2xl shadow-sm"><i class="fas fa-arrow-trend-up text-3xl"></i></div>
+              <div>
+                <p class="text-base text-gray-500 font-bold uppercase tracking-wider">Data Terakhir Masuk</p>
+                <p class="text-4xl font-extrabold text-gray-900 mt-1" id="sumLastData">0</p>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End Dashboard View -->
+
+      </div>
+    </main>
+
+    <script>
+      // ========================================================================
+      // PENTING UNTUK GITHUB PAGES:
+      // Ganti SCRIPT_URL di bawah ini dengan URL Web App dari Google Apps Script Anda!
+      // Pastikan saat "Deploy", opsi Akses (Who has access) diset ke "Anyone" (Siapa saja).
+      // ========================================================================
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysdmQctH6h6AvbC9PsqFPRlTb-fVIuu79CzGuLWbL37i0ZPbx7BcN-zGtc3vtdh-Yn/exec"; 
+      
+      let myChartInstance = null;
+      let globalDashboardData = null; 
+
+      // Saat halaman pertama dimuat
+      document.addEventListener('DOMContentLoaded', function() {
+        if (SCRIPT_URL === "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
+          console.warn("URL Apps Script belum diisi. Menggunakan data simulasi.");
+          populateDropdown(['Puskesmas Mawar', 'Puskesmas Melati', 'Puskesmas Anggrek']);
+          return;
+        }
+
+        // Ambil data menggunakan Fetch API (Standar Web untuk GitHub Pages)
+        fetch(`${SCRIPT_URL}?action=getPuskesmasList`)
+          .then(res => res.json())
+          .then(data => populateDropdown(data))
+          .catch(err => {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal memuat data dari Spreadsheet' });
+          });
+      });
+
+      // ---- LOGIKA NAVIGASI TAB ----
+      function switchTab(tab) {
+        document.getElementById('view-input').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('tab-input').classList.remove('active');
+        document.getElementById('tab-dashboard').classList.remove('active');
+
+        document.getElementById('view-' + tab).classList.remove('hidden');
+        document.getElementById('tab-' + tab).classList.add('active');
+
+        if(tab === 'dashboard') {
+          document.getElementById('dashPuskesmas').innerHTML = '<option>Memuat data grafik...</option>';
+          
+          if (SCRIPT_URL !== "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
+            fetch(`${SCRIPT_URL}?action=getDashboardData`)
+              .then(res => res.json())
+              .then(data => setupDashboard(data))
+              .catch(err => console.error(err));
+          } else {
+            setTimeout(() => {
+              setupDashboard({
+                headers: ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"],
+                data: {
+                  "Puskesmas Mawar": [10, 15, 20, 25],
+                  "Puskesmas Melati": [5, 12, 18, 14],
+                  "Puskesmas Anggrek": [20, 22, 19, 30]
+                }
+              });
+            }, 500);
+          }
+        }
+      }
+
+      // ---- LOGIKA TAB INPUT DATA ----
+      function populateDropdown(list) {
+        const select = document.getElementById('puskesmas');
+        select.innerHTML = '<option value="" disabled selected>-- Pilih Puskesmas --</option>';
+        list.forEach(item => {
+          select.appendChild(new Option(item, item));
+        });
+      }
+
+      function handleFormSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const puskesmas = document.getElementById('puskesmas').value;
+        const nilai = document.getElementById('nilai').value;
+
+        if(!puskesmas || !nilai) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner loader-spin text-xl"></i> <span>Menyimpan...</span>';
+        
+        if (SCRIPT_URL !== "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
+          // Menggunakan POST request ke Google Apps Script
+          fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'saveData',
+              puskesmas: puskesmas,
+              nilai: nilai
+            }),
+            // Menggunakan text/plain untuk menghindari issue blokir CORS dari browser saat cross-domain
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+          })
+          .then(res => res.json())
+          .then(res => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
+            if(res.success) {
+              Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 2000, showConfirmButton: false });
+              document.getElementById('nilai').value = '';
+              globalDashboardData = null; // Reset cache
+            } else {
+              Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
+            }
+          })
+          .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
+            Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal terhubung ke server.' });
+          });
+        } else {
+          // Data simulasi
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
+            Swal.fire({ icon: 'success', title: 'Berhasil (Pratinjau)', text: 'Data simulasi berhasil disimpan!', timer: 2000, showConfirmButton: false });
+            document.getElementById('nilai').value = '';
+            globalDashboardData = null;
+          }, 1000);
+        }
+      }
+
+      // ---- LOGIKA TAB DASHBOARD GRAFIK ----
+      function setupDashboard(payload) {
+        globalDashboardData = payload; 
+        const selectDash = document.getElementById('dashPuskesmas');
+        selectDash.innerHTML = '<option value="" disabled selected>-- Pilih Puskesmas --</option>';
+        
+        Object.keys(payload.data).forEach(pusk => {
+          selectDash.appendChild(new Option(pusk, pusk));
+        });
+      }
+
+      function renderChart() {
+        const selectedPusk = document.getElementById('dashPuskesmas').value;
+        if(!selectedPusk || !globalDashboardData) return;
+
+        document.getElementById('chartEmptyState').classList.add('hidden');
+        document.getElementById('myChart').classList.remove('hidden');
+        document.getElementById('summaryCards').style.display = 'grid';
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const labels = globalDashboardData.headers; 
+        const dataValues = globalDashboardData.data[selectedPusk]; 
+
+        document.getElementById('sumTotalMinggu').innerText = dataValues.filter(v => v > 0).length;
+        document.getElementById('sumLastData').innerText = dataValues[dataValues.length - 1] || 0;
+
+        if (myChartInstance) {
+          myChartInstance.destroy();
+        }
+
+        myChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Capaian Mingguan',
+              data: dataValues,
+              borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79, 70, 229, 0.1)',
+              borderWidth: 3,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#4f46e5',
+              pointBorderWidth: 2,
+              pointRadius: 5,
+              fill: true,
+              tension: 0.4 
+            },
+            {
+              type: 'bar',
+              label: 'Volume',
+              data: dataValues,
+              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+              borderRadius: 6,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                padding: 12,
+                titleFont: { family: 'Outfit', size: 14 },
+                bodyFont: { family: 'Outfit', size: 14 },
+                displayColors: false
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false }
+              },
+              x: {
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
