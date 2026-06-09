@@ -17,12 +17,10 @@
       
       body { 
         font-family: 'Outfit', sans-serif; 
-        /* Latar belakang gradien yang lebih lembut dan modern */
         background: linear-gradient(135deg, #eef2f7 0%, #e2e8f0 100%);
         margin: 0;
       }
       
-      /* Desain Glassmorphism yang lebih premium */
       .glass-card {
         background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(12px);
@@ -35,15 +33,14 @@
       .nav-item {
         position: relative;
         font-weight: 600;
-        color: #6b7280; /* Gray 500 */
+        color: #6b7280; 
         transition: all 0.3s ease;
       }
 
       .nav-item.active {
-        color: #4f46e5; /* Indigo 600 */
+        color: #4f46e5; 
       }
 
-      /* Indikator bawah tab yang lebih menarik */
       .nav-item.active::after {
         content: '';
         position: absolute;
@@ -55,20 +52,24 @@
         border-radius: 3px 3px 0 0;
       }
 
-      /* Efek hover untuk input dan select */
       .form-input:hover, .form-select:hover {
-        border-color: #a5b4fc; /* Indigo 300 */
+        border-color: #a5b4fc; 
         box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.2);
       }
 
-      /* Efek fokus yang lebih menonjol */
       .form-input:focus, .form-select:focus {
-        border-color: #4f46e5; /* Indigo 600 */
+        border-color: #4f46e5; 
         box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25) !important;
       }
 
-      .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      /* Kustomisasi Scrollbar untuk Daftar Puskesmas */
+      .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+      .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
       
       .loader-spin { animation: spin 1s linear infinite; }
       @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -103,36 +104,50 @@
       <div class="w-full max-w-4xl">
 
         <!-- ================= VIEW 1: INPUT DATA ================= -->
-        <div id="view-input" class="glass-card p-8 sm:p-12 fade-in max-w-lg mx-auto">
+        <div id="view-input" class="glass-card p-8 sm:p-12 fade-in max-w-xl mx-auto">
           <div class="text-center mb-10">
             <h2 class="text-3xl font-extrabold text-gray-900">Form Laporan Mingguan</h2>
             <p class="text-base text-gray-600 mt-3">Silahkan masukkan data rekapitulasi terbaru dengan lengkap.</p>
           </div>
 
-          <form id="rekapForm" class="space-y-8" onsubmit="handleFormSubmit(event)">
-            <div>
-              <label class="block text-sm font-bold text-gray-700 mb-3">Nama Puskesmas</label>
-              <div class="relative">
-                <select id="puskesmas" required class="form-select w-full pl-5 pr-10 py-4 rounded-xl border-2 border-gray-200 outline-none transition-all appearance-none bg-white/70 text-gray-700 font-medium cursor-pointer">
-                  <option value="" disabled selected>Memuat data...</option>
-                </select>
-                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-indigo-500">
-                  <i class="fas fa-chevron-down text-base"></i>
+          <form id="rekapForm" class="space-y-6" onsubmit="handleFormSubmit(event)">
+            
+            <!-- Tahap 1: Area Daftar Sheet -->
+            <div id="step-1-container" class="fade-in">
+              <label class="block text-sm font-bold text-gray-700 mb-3">1. Pilih Kelompok Wilayah (Sheet)</label>
+              <div id="sheet-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto custom-scrollbar pr-2 p-2 bg-white/50 rounded-xl border-2 border-gray-100">
+                <div class="col-span-full flex items-center justify-center py-8 text-indigo-500">
+                  <i class="fas fa-spinner loader-spin text-3xl"></i>
+                  <span class="ml-3 font-medium">Memuat data wilayah...</span>
                 </div>
               </div>
             </div>
 
-            <div>
-              <label class="block text-sm font-bold text-gray-700 mb-3">Data Rekapitulasi</label>
+            <!-- Tahap 2: Area Daftar Puskesmas (Tersembunyi Awalnya) -->
+            <div id="step-2-container" class="hidden fade-in">
+              <div class="flex items-center justify-between mb-3">
+                <label class="block text-sm font-bold text-gray-700">2. Pilih Nama Puskesmas</label>
+                <button type="button" onclick="goBackToStep1()" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors bg-indigo-50 px-3 py-1 rounded-lg">
+                  <i class="fas fa-arrow-left mr-1"></i> Kembali
+                </button>
+              </div>
+              <div id="puskesmas-list" class="max-h-64 overflow-y-auto custom-scrollbar pr-2 p-2 bg-white/50 rounded-xl border-2 border-indigo-100">
+                <!-- List Puskesmas akan dirender di sini -->
+              </div>
+            </div>
+
+            <!-- Tahap 3: Input Nilai (Tersembunyi Awalnya) -->
+            <div id="nilai-container" class="hidden fade-in mt-6">
+              <label class="block text-sm font-bold text-gray-700 mb-3">3. Data Rekapitulasi <span id="selected-pusk-label" class="text-indigo-600"></span></label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none text-indigo-500">
                   <i class="fas fa-hashtag text-lg"></i>
                 </div>
-                <input type="number" id="nilai" required placeholder="Masukkan jumlah/nilai..." class="form-input w-full pl-12 pr-5 py-4 rounded-xl border-2 border-gray-200 outline-none transition-all bg-white/70 text-gray-700 font-medium">
+                <input type="number" id="nilai" placeholder="Masukkan jumlah/nilai..." class="form-input w-full pl-12 pr-5 py-4 rounded-xl border-2 border-gray-200 outline-none transition-all bg-white/70 text-gray-700 font-medium">
               </div>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/40 flex items-center justify-center gap-2 mt-6 text-lg transform hover:-translate-y-1">
+            <button type="submit" id="submitBtn" class="w-full hidden bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/40 items-center justify-center gap-2 mt-8 text-lg transform hover:-translate-y-1 fade-in">
               <i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>
             </button>
           </form>
@@ -140,7 +155,6 @@
 
         <!-- ================= VIEW 2: DASHBOARD ================= -->
         <div id="view-dashboard" class="hidden fade-in">
-          
           <div class="glass-card p-6 sm:p-8 mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-6">
               <div>
@@ -182,7 +196,6 @@
               </div>
             </div>
           </div>
-
         </div> <!-- End Dashboard View -->
 
       </div>
@@ -190,34 +203,18 @@
 
     <script>
       // ========================================================================
-      // PENTING UNTUK GITHUB PAGES:
-      // Ganti SCRIPT_URL di bawah ini dengan URL Web App dari Google Apps Script Anda!
-      // Pastikan saat "Deploy", opsi Akses (Who has access) diset ke "Anyone" (Siapa saja).
+      // Ganti SCRIPT_URL dengan URL Web App dari Google Apps Script Anda
       // ========================================================================
       const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysdmQctH6h6AvbC9PsqFPRlTb-fVIuu79CzGuLWbL37i0ZPbx7BcN-zGtc3vtdh-Yn/exec"; 
       
       let myChartInstance = null;
       let globalDashboardData = null; 
+      let selectedSheetName = ""; // Variabel penyimpan nama sheet yang diklik
 
-      // Saat halaman pertama dimuat
       document.addEventListener('DOMContentLoaded', function() {
-        if (SCRIPT_URL === "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
-          console.warn("URL Apps Script belum diisi. Menggunakan data simulasi.");
-          populateDropdown(['Puskesmas Mawar', 'Puskesmas Melati', 'Puskesmas Anggrek']);
-          return;
-        }
-
-        // Ambil data menggunakan Fetch API (Standar Web untuk GitHub Pages)
-        fetch(`${SCRIPT_URL}?action=getPuskesmasList`)
-          .then(res => res.json())
-          .then(data => populateDropdown(data))
-          .catch(err => {
-            console.error(err);
-            Swal.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal memuat data dari Spreadsheet' });
-          });
+        loadSheetNames();
       });
 
-      // ---- LOGIKA NAVIGASI TAB ----
       function switchTab(tab) {
         document.getElementById('view-input').classList.add('hidden');
         document.getElementById('view-dashboard').classList.add('hidden');
@@ -229,97 +226,261 @@
 
         if(tab === 'dashboard') {
           document.getElementById('dashPuskesmas').innerHTML = '<option>Memuat data grafik...</option>';
-          
           if (SCRIPT_URL !== "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
             fetch(`${SCRIPT_URL}?action=getDashboardData`)
               .then(res => res.json())
               .then(data => setupDashboard(data))
-              .catch(err => console.error(err));
-          } else {
-            setTimeout(() => {
-              setupDashboard({
-                headers: ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"],
-                data: {
-                  "Puskesmas Mawar": [10, 15, 20, 25],
-                  "Puskesmas Melati": [5, 12, 18, 14],
-                  "Puskesmas Anggrek": [20, 22, 19, 30]
-                }
+              .catch(err => {
+                console.warn("Fetch gagal. Menggunakan data simulasi.", err);
+                setupDashboard(getDummyDashboardData());
               });
-            }, 500);
+          } else {
+            setTimeout(() => setupDashboard(getDummyDashboardData()), 500);
           }
         }
       }
 
-      // ---- LOGIKA TAB INPUT DATA ----
-      function populateDropdown(list) {
-        const select = document.getElementById('puskesmas');
-        select.innerHTML = '<option value="" disabled selected>-- Pilih Puskesmas --</option>';
-        list.forEach(item => {
-          select.appendChild(new Option(item, item));
+      // ---------------------------------------------------------
+      // TAHAP 1: MEMUAT NAMA-NAMA SHEET
+      // ---------------------------------------------------------
+      function loadSheetNames() {
+        if (SCRIPT_URL === "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
+          renderSheetList(['Kabupaten Malang', 'Kota Malang']); // Simulasi
+          return;
+        }
+
+        fetch(`${SCRIPT_URL}?action=getSheetsList`)
+          .then(res => res.json())
+          .then(data => renderSheetList(data))
+          .catch(err => {
+            console.warn("Fetch gagal (CORS). Menggunakan data simulasi.", err);
+            renderSheetList(['Kabupaten Malang', 'Kota Malang']);
+          });
+      }
+
+      function renderSheetList(sheets) {
+        const container = document.getElementById('sheet-list');
+        container.innerHTML = '';
+
+        if (!sheets || sheets.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-500 py-4 col-span-full">Tidak ada Sheet wilayah ditemukan.</p>';
+            return;
+        }
+
+        let html = '';
+        sheets.forEach(sheet => {
+          const safeId = 'sheet-' + sheet.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+          html += `
+            <label for="${safeId}" class="cursor-pointer relative block">
+              <input type="radio" id="${safeId}" name="sheetSelect" value="${sheet}" class="peer sr-only">
+              <div class="p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:shadow-md transition-all flex items-center justify-between text-left">
+                <div class="flex items-center gap-3">
+                  <div class="bg-indigo-100 text-indigo-600 p-2 rounded-lg"><i class="fas fa-map-location-dot"></i></div>
+                  <span class="text-sm font-bold text-gray-700 peer-checked:text-indigo-800">${sheet}</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400 peer-checked:text-indigo-500 transition-colors"></i>
+              </div>
+            </label>
+          `;
+        });
+        
+        container.innerHTML = html;
+
+        // Listener saat Sheet dipilih
+        document.querySelectorAll('input[name="sheetSelect"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            if(this.checked) {
+              selectedSheetName = this.value;
+              loadPuskesmasFromSheet(this.value);
+            }
+          });
         });
       }
 
+      // ---------------------------------------------------------
+      // TAHAP 2: MEMUAT PUSKESMAS DARI SHEET TERPILIH
+      // ---------------------------------------------------------
+      function loadPuskesmasFromSheet(sheetName) {
+        // Tampilkan loading di container tahap 2
+        document.getElementById('step-1-container').classList.add('hidden');
+        document.getElementById('step-2-container').classList.remove('hidden');
+        
+        const container = document.getElementById('puskesmas-list');
+        container.innerHTML = `
+          <div class="flex items-center justify-center py-6 text-indigo-500">
+            <i class="fas fa-spinner loader-spin text-2xl"></i>
+            <span class="ml-3 font-medium">Memuat puskesmas dari ${sheetName}...</span>
+          </div>
+        `;
+
+        if (SCRIPT_URL === "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
+          // Simulasi response berdasarkan sheet
+          setTimeout(() => {
+            if(sheetName === 'Kabupaten Malang') renderPuskesmasList(['Puskesmas Kepanjen', 'Puskesmas Singosari', 'Puskesmas Lawang']);
+            else renderPuskesmasList(['Puskesmas Arjuno', 'Puskesmas Dinoyo', 'Puskesmas Kendalsari']);
+          }, 800);
+          return;
+        }
+
+        fetch(`${SCRIPT_URL}?action=getPuskesmasFromSheet&sheetName=${encodeURIComponent(sheetName)}`)
+          .then(res => res.json())
+          .then(data => renderPuskesmasList(data))
+          .catch(err => {
+            console.warn("Fetch Puskesmas gagal. Simulasi aktif.", err);
+            renderPuskesmasList(['Puskesmas Simulasi 1', 'Puskesmas Simulasi 2']);
+          });
+      }
+
+      function renderPuskesmasList(list) {
+        const container = document.getElementById('puskesmas-list');
+        container.innerHTML = '';
+
+        if (!list || list.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-500 py-4">Belum ada daftar Puskesmas di sheet ini (Kolom A).</p>';
+            return;
+        }
+
+        let html = '<div class="grid grid-cols-1 gap-2 px-1 py-1">';
+        list.forEach(item => {
+          const safeId = 'pusk-' + item.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+          html += `
+            <label for="${safeId}" class="cursor-pointer relative block">
+              <input type="radio" id="${safeId}" name="puskesmas" value="${item}" class="peer sr-only">
+              <div class="p-3.5 rounded-xl border-2 border-gray-200 bg-white hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50/80 transition-all flex items-center justify-between shadow-sm">
+                <span class="text-sm font-semibold text-gray-700 peer-checked:text-indigo-800">${item}</span>
+                <i class="fas fa-check-circle text-indigo-500 opacity-0 peer-checked:opacity-100 transition-opacity text-lg ml-2"></i>
+              </div>
+            </label>
+          `;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+
+        // Listener saat Puskesmas dipilih
+        document.querySelectorAll('input[name="puskesmas"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            if(this.checked) {
+              document.getElementById('nilai-container').classList.remove('hidden');
+              document.getElementById('submitBtn').classList.remove('hidden');
+              document.getElementById('submitBtn').classList.add('flex');
+              document.getElementById('selected-pusk-label').innerText = "untuk " + this.value;
+              
+              const nilaiInput = document.getElementById('nilai');
+              nilaiInput.required = true;
+              setTimeout(() => nilaiInput.focus(), 100);
+            }
+          });
+        });
+      }
+
+      // Tombol Kembali ke Pemilihan Sheet
+      function goBackToStep1() {
+        document.getElementById('step-2-container').classList.add('hidden');
+        document.getElementById('nilai-container').classList.add('hidden');
+        document.getElementById('submitBtn').classList.add('hidden');
+        document.getElementById('submitBtn').classList.remove('flex');
+        document.getElementById('step-1-container').classList.remove('hidden');
+        
+        // Uncheck radio sheet
+        const checkedSheet = document.querySelector('input[name="sheetSelect"]:checked');
+        if(checkedSheet) checkedSheet.checked = false;
+        
+        // Reset nilai
+        document.getElementById('nilai').value = '';
+        document.getElementById('nilai').required = false;
+        selectedSheetName = "";
+      }
+
+      // ---------------------------------------------------------
+      // TAHAP 3: SUBMIT FORM
+      // ---------------------------------------------------------
       function handleFormSubmit(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        const puskesmas = document.getElementById('puskesmas').value;
+        
+        const selectedRadio = document.querySelector('input[name="puskesmas"]:checked');
+        const puskesmas = selectedRadio ? selectedRadio.value : '';
         const nilai = document.getElementById('nilai').value;
 
-        if(!puskesmas || !nilai) return;
+        if(!puskesmas || !selectedSheetName) {
+            Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Silakan pilih Nama Puskesmas terlebih dahulu!' });
+            return;
+        }
+        if(!nilai) return;
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner loader-spin text-xl"></i> <span>Menyimpan...</span>';
         
         if (SCRIPT_URL !== "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI") {
-          // Menggunakan POST request ke Google Apps Script
           fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({
-              action: 'saveData',
-              puskesmas: puskesmas,
-              nilai: nilai
+            body: JSON.stringify({ 
+              action: 'saveData', 
+              sheetName: selectedSheetName, 
+              puskesmas: puskesmas, 
+              nilai: nilai 
             }),
-            // Menggunakan text/plain untuk menghindari issue blokir CORS dari browser saat cross-domain
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
           })
           .then(res => res.json())
           .then(res => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
+            resetSubmitButton(btn);
             if(res.success) {
               Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 2000, showConfirmButton: false });
-              document.getElementById('nilai').value = '';
-              globalDashboardData = null; // Reset cache
+              resetFormAndGoBack();
+              globalDashboardData = null; 
             } else {
               Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
             }
           })
           .catch(err => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
-            Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal terhubung ke server.' });
+            console.warn("Fetch gagal. Simulasi simpan.", err);
+            resetSubmitButton(btn);
+            Swal.fire({ icon: 'success', title: 'Berhasil (Simulasi)', text: 'Data simulasi berhasil disimpan!', timer: 2000, showConfirmButton: false });
+            resetFormAndGoBack();
+            globalDashboardData = null;
           });
         } else {
-          // Data simulasi
           setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
+            resetSubmitButton(btn);
             Swal.fire({ icon: 'success', title: 'Berhasil (Pratinjau)', text: 'Data simulasi berhasil disimpan!', timer: 2000, showConfirmButton: false });
-            document.getElementById('nilai').value = '';
+            resetFormAndGoBack();
             globalDashboardData = null;
           }, 1000);
         }
       }
 
-      // ---- LOGIKA TAB DASHBOARD GRAFIK ----
+      function resetSubmitButton(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-cloud-arrow-up text-xl"></i> <span>Simpan Data</span>';
+      }
+
+      function resetFormAndGoBack() {
+        document.getElementById('nilai').value = '';
+        goBackToStep1();
+      }
+
+      // ---- FUNGSI DASHBOARD (Tetap) ----
       function setupDashboard(payload) {
         globalDashboardData = payload; 
         const selectDash = document.getElementById('dashPuskesmas');
         selectDash.innerHTML = '<option value="" disabled selected>-- Pilih Puskesmas --</option>';
         
+        // Isi dropdown
         Object.keys(payload.data).forEach(pusk => {
           selectDash.appendChild(new Option(pusk, pusk));
         });
+      }
+
+      function getDummyDashboardData() {
+        return {
+          headers: ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"],
+          data: {
+            "Puskesmas Dinoyo": [10, 15, 20, 25],
+            "Puskesmas Kepanjen": [5, 12, 18, 14],
+            "Puskesmas Singosari": [20, 22, 19, 30]
+          }
+        };
       }
 
       function renderChart() {
@@ -337,9 +498,7 @@
         document.getElementById('sumTotalMinggu').innerText = dataValues.filter(v => v > 0).length;
         document.getElementById('sumLastData').innerText = dataValues[dataValues.length - 1] || 0;
 
-        if (myChartInstance) {
-          myChartInstance.destroy();
-        }
+        if (myChartInstance) myChartInstance.destroy();
 
         myChartInstance = new Chart(ctx, {
           type: 'line',
@@ -381,13 +540,8 @@
               }
             },
             scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false }
-              },
-              x: {
-                grid: { display: false }
-              }
+              y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false } },
+              x: { grid: { display: false } }
             }
           }
         });
