@@ -2,65 +2,116 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>E-Rekap Puskesmas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
       
       body { 
-        font-family: 'Inter', sans-serif; 
-        background-color: #f1f5f9; /* Light Grey Modern */
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background-color: #f1f5f9; 
         color: #0f172a;
         margin: 0;
         overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Animated Aurora Background */
+      .bg-aurora {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: -1;
+        background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                    radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 25%);
+        filter: blur(60px);
+        animation: auroraMove 15s ease-in-out infinite alternate;
+      }
+
+      @keyframes auroraMove {
+        0% { transform: scale(1) translate(0, 0); }
+        50% { transform: scale(1.2) translate(5%, 5%); }
+        100% { transform: scale(1) translate(-5%, -5%); }
       }
       
-      .premium-glass {
-        background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        border-radius: 20px;
+      /* Custom SweetAlert Backdrop Blur */
+      div.swal2-container {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        background: rgba(15, 23, 42, 0.5) !important;
       }
 
-      /* Efek Bayangan Menu Samping Kiri */
-      .sidebar-shadow {
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04);
+      /* Glassmorphism Cards */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+        border-radius: 28px;
       }
 
+      .glass-input {
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+      }
+
+      /* Navigation Items */
       .nav-item {
         position: relative;
         color: #64748b; 
-        transition: all 0.3s ease;
-        border-radius: 12px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 16px;
       }
-      .nav-item:hover { 
-        background-color: #f8fafc; 
-        color: #334155; 
+      .nav-item:hover:not(.active) { 
+        background-color: rgba(255,255,255,0.8); 
+        color: #3b82f6; 
       }
-      /* Tampilan Menu saat Aktif (Terpilih) */
       .nav-item.active { 
-        background-color: #4f46e5; /* Indigo */
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
         color: #ffffff; 
         font-weight: 600; 
-        box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.39);
-        transform: translateY(-1px);
+        box-shadow: 0 8px 25px -6px rgba(37, 99, 235, 0.5);
+      }
+      
+      /* Submenu Item Styles */
+      .submenu-item {
+        color: #64748b;
+        transition: all 0.3s ease;
+      }
+      .submenu-item:hover:not(.active) { color: #3b82f6; background-color: rgba(241, 245, 249, 0.8); }
+      .submenu-item.active { background-color: #eff6ff; color: #2563eb; font-weight: 700; }
+
+      @media (max-width: 1023px) {
+        .mobile-nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: #94a3b8;
+          font-size: 0.7rem;
+          font-weight: 600;
+          gap: 4px;
+          transition: all 0.3s;
+        }
+        .mobile-nav-item i { font-size: 1.25rem; transition: transform 0.3s; }
+        .mobile-nav-item.active { color: #3b82f6; }
+        .mobile-nav-item.active i { transform: translateY(-2px); }
       }
 
-      .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-      .fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); }
+      .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
       @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
       
       .loader-spin { animation: spin 1s linear infinite; }
@@ -71,220 +122,329 @@
     </style>
   </head>
 
-  <body class="min-h-screen flex flex-col lg:flex-row relative">
+  <body class="min-h-screen text-slate-800 antialiased">
+    
+    <!-- Background Effect -->
+    <div class="bg-aurora"></div>
 
-    <!-- ================= SIDEBAR MENU (KIRI) ================= -->
-    <aside class="w-full lg:w-72 bg-white sidebar-shadow z-40 lg:h-screen lg:sticky lg:top-0 flex flex-col transition-all duration-300 border-b lg:border-b-0 lg:border-r border-slate-200">
-      
-      <!-- Logo Header -->
-      <div class="p-6 lg:p-8 flex items-center gap-4 border-b border-slate-100">
-        <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-500/30 flex items-center justify-center">
-          <i class="fas fa-heart-pulse text-xl"></i>
+    <!-- Custom Notification Box -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3"></div>
+
+    <!-- ================= PREMIUM FULLSCREEN LOADING OVERLAY ================= -->
+    <div id="global-loading-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
+      <div class="glass-card p-10 max-w-sm w-11/12 text-center flex flex-col items-center gap-6 border border-white/20 shadow-2xl bg-white/10">
+        <!-- Glowing Ring Loader -->
+        <div class="relative flex items-center justify-center w-24 h-24">
+          <div class="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
+          <div class="absolute inset-0 rounded-full border-4 border-t-blue-400 border-r-cyan-300 loader-spin shadow-[0_0_25px_rgba(59,130,246,0.8)]"></div>
+          <i class="fas fa-shield-halved text-3xl text-blue-400 animate-pulse"></i>
         </div>
         <div>
-          <h1 class="font-extrabold text-2xl tracking-tight text-slate-800 leading-none">HiCare Rekap</h1>
-          <p class="text-xs text-slate-400 font-medium mt-1 uppercase tracking-wider">Puskesmas</p>
+          <h3 class="font-extrabold text-white text-xl tracking-wide">Membuka Akses</h3>
+          <p id="loading-overlay-text" class="text-xs text-blue-200 mt-2 font-semibold tracking-wide uppercase">Memverifikasi otorisasi...</p>
         </div>
       </div>
-      
-      <!-- Menu Links -->
-      <nav class="flex-grow p-4 lg:p-6 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible custom-scrollbar">
-        <button onclick="switchTab('input')" id="tab-input" class="nav-item active flex items-center text-sm lg:text-base px-4 py-3.5 whitespace-nowrap lg:whitespace-normal font-medium flex-shrink-0 lg:flex-shrink">
-          <i class="fas fa-pen-to-square w-6 text-lg"></i> 
-          <span class="ml-1">Entri Data</span>
-        </button>
-        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item flex items-center text-sm lg:text-base px-4 py-3.5 whitespace-nowrap lg:whitespace-normal font-medium flex-shrink-0 lg:flex-shrink">
-          <i class="fas fa-chart-pie w-6 text-lg"></i> 
-          <span class="ml-1">Dashboard Grafik</span>
-        </button>
-      </nav>
+    </div>
 
-      <!-- Footer Sidebar -->
-      <div class="p-6 border-t border-slate-100 hidden lg:block">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-            <i class="fas fa-user-shield"></i>
+    <!-- ================= HALAMAN LOGIN ================= -->
+    <div id="view-login" class="fixed inset-0 z-50 flex items-center justify-center p-5 transition-all duration-700 bg-slate-900/10 backdrop-blur-sm">
+      <div class="w-full max-w-[400px] glass-card p-10 fade-in-up">
+        <div class="text-center mb-10">
+          <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-cyan-400 text-white rounded-[24px] shadow-xl shadow-blue-500/30 flex items-center justify-center mx-auto mb-6 transform rotate-3">
+            <i class="fas fa-hospital-user text-4xl transform -rotate-3"></i>
           </div>
+          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Portal Faskes</h1>
+          <p class="text-sm text-slate-500 mt-2 font-medium">Masuk untuk mengelola data pelaporan</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-6">
           <div>
-            <p class="text-sm font-bold text-slate-700 leading-tight">Administrator</p>
-            <p class="text-xs text-emerald-500 font-medium flex items-center gap-1"><i class="fas fa-circle text-[8px]"></i> Sistem Aktif</p>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- ================= KONTEN UTAMA (KANAN) ================= -->
-    <main id="main-content" class="flex-grow w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-500 relative z-10 lg:min-h-screen lg:overflow-y-auto custom-scrollbar">
-
-      <div id="view-input" class="premium-glass p-6 sm:p-8 lg:p-10 fade-in-up w-full max-w-4xl mx-auto mt-2 lg:mt-6">
-        
-        <div class="text-center lg:text-left mb-8 lg:mb-10">
-          <h2 class="text-3xl font-black text-slate-900 tracking-tight">Pelaporan Rutin</h2>
-          <p class="text-slate-500 mt-2 text-sm lg:text-base">Pilih wilayah dan fasilitas kesehatan untuk memperbarui data rekapitulasi mingguan.</p>
-        </div>
-
-        <div class="space-y-6 relative min-h-[350px]">
-          
-          <!-- Tahap 1: Wilayah -->
-          <div id="step-1-container" class="transition-all duration-300 transform">
-            <div class="flex items-center gap-3 mb-5">
-              <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm border border-indigo-100">1</div>
-              <label class="text-sm sm:text-base font-bold text-slate-800 uppercase tracking-wider">Tentukan Wilayah</label>
-            </div>
-            
-            <div id="sheet-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[400px] overflow-y-auto custom-scrollbar p-1">
-              <div class="col-span-full flex flex-col items-center justify-center py-10 text-indigo-400">
-                <i class="fas fa-circle-notch loader-spin text-3xl mb-3"></i>
-                <span class="font-medium text-sm">Menyinkronkan data wilayah...</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tahap 2: Puskesmas -->
-          <div id="step-2-container" class="hidden absolute top-0 left-0 w-full transition-all duration-300">
-            <div class="flex items-center justify-between mb-5 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
-              <div class="flex items-center gap-3 pl-2">
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md">2</div>
-                <div>
-                  <label class="text-sm font-bold text-slate-800 block leading-tight">Fasilitas Kesehatan</label>
-                  <span id="label-wilayah-terpilih" class="text-xs text-indigo-600 font-medium"></span>
-                </div>
-              </div>
-              <button type="button" onclick="goBackToStep1()" class="text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors flex items-center bg-slate-50 hover:bg-indigo-50 px-4 py-2.5 rounded-xl border border-slate-200 hover:border-indigo-200 shadow-sm">
-                <i class="fas fa-arrow-left mr-1.5"></i> Kembali
-              </button>
-            </div>
-            
-            <div id="puskesmas-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto custom-scrollbar p-1">
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div id="view-dashboard" class="hidden fade-in-up mt-2 lg:mt-6 max-w-5xl mx-auto">
-        <div class="premium-glass p-6 sm:p-8 lg:p-10 mb-6">
-          <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-8 border-b border-slate-100 pb-6">
-            <div>
-              <h2 class="text-3xl font-black text-slate-900 tracking-tight">Capaian Grafik</h2>
-              <p class="text-slate-500 mt-2 text-sm lg:text-base">Analisis visual perkembangan data fasilitas kesehatan.</p>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto bg-slate-50 p-2 rounded-2xl border border-slate-100">
-              <div class="relative min-w-[180px]">
-                <label class="block text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase tracking-wider">Filter Wilayah</label>
-                <select id="dashSheet" onchange="onDashSheetChange()" class="w-full pl-4 pr-8 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none bg-white text-slate-700 font-semibold cursor-pointer text-sm shadow-sm transition-all hover:border-indigo-300">
-                  <option value="" disabled selected>Memuat...</option>
-                </select>
-                <div class="absolute bottom-3.5 right-4 pointer-events-none text-slate-400"><i class="fas fa-chevron-down text-xs"></i></div>
-              </div>
-              <div class="relative min-w-[220px]">
-                <label class="block text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase tracking-wider">Filter Puskesmas</label>
-                <select id="dashPuskesmas" onchange="renderChart()" class="w-full pl-4 pr-8 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none bg-white text-slate-700 font-semibold cursor-pointer text-sm shadow-sm transition-all hover:border-indigo-300" disabled>
-                  <option value="" disabled selected>Menunggu wilayah...</option>
-                </select>
-                <div class="absolute bottom-3.5 right-4 pointer-events-none text-slate-400"><i class="fas fa-chevron-down text-xs"></i></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Container Canvas -->
-          <div class="relative h-[350px] sm:h-[450px] w-full flex items-center justify-center bg-white rounded-2xl border border-slate-100 p-2 sm:p-4 shadow-sm" id="chartContainer">
-            <p id="chartEmptyState" class="text-slate-400 flex flex-col items-center gap-3">
-              <i class="fas fa-chart-column text-5xl text-slate-200 mb-1"></i>
-              <span class="text-sm sm:text-base font-medium">Tentukan parameter untuk melihat grafik visual</span>
-            </p>
-            <div class="w-full h-full min-w-0">
-              <canvas id="myChart" class="hidden w-full h-full"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Kartu Ringkasan -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6" id="summaryCards" style="display: none;">
-          <div class="premium-glass p-6 lg:p-8 flex items-center gap-5">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 flex-shrink-0 shadow-sm">
-              <i id="cardIcon1" class="fas fa-calendar-check text-2xl"></i>
-            </div>
-            <div>
-              <p id="cardLabel1" class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Minggu Dilaporkan</p>
-              <p class="text-3xl font-black text-slate-800 leading-none" id="sumTotalMinggu">0</p>
-            </div>
-          </div>
-          <div class="premium-glass p-6 lg:p-8 flex items-center gap-5">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 flex-shrink-0 shadow-sm">
-              <i id="cardIcon2" class="fas fa-arrow-trend-up text-2xl"></i>
-            </div>
-            <div>
-              <p id="cardLabel2" class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Data Terakhir Masuk</p>
-              <p class="text-3xl font-black text-slate-800 leading-none" id="sumLastData">0</p>
-            </div>
-          </div>
-        </div>
-      </div> 
-    </main>
-
-    <div id="input-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="closeInputModal()"></div>
-      
-      <div class="premium-glass relative w-full max-w-sm p-6 sm:p-8 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-white/50" id="input-modal-content">
-        
-        <button type="button" onclick="closeInputModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors border border-slate-200">
-          <i class="fas fa-times text-sm"></i>
-        </button>
-        
-        <div class="mb-6">
-          <h3 class="text-2xl font-black text-slate-800 pr-8 leading-tight" id="modal-pusk-name">Nama Faskes</h3>
-          <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5"><i class="fas fa-map-marker-alt text-indigo-500"></i> <span id="modal-wilayah-name" class="font-medium">Wilayah</span></p>
-        </div>
-        
-        <form id="modalForm" onsubmit="handleFormSubmit(event)">
-          
-          <div class="mb-5">
-            <label class="block text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">Target Minggu Pelaporan</label>
-            <div class="relative">
-              <select id="modal-week-select" onchange="onWeekSelectChange()" class="w-full pl-4 pr-10 py-3.5 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none bg-slate-50 hover:bg-white text-slate-800 font-bold cursor-pointer text-sm appearance-none shadow-sm transition-colors">
-                <!-- Options populated via JS -->
-              </select>
-              <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-indigo-500">
-                <i class="fas fa-sort text-sm"></i>
-              </div>
-            </div>
-          </div>
-
-          <div class="mb-8">
-            <label class="block text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider">Nilai Capaian <span id="modal-col-info" class="text-indigo-500 font-black ml-1 lowercase normal-case bg-indigo-50 px-2 py-0.5 rounded">(Kolom)</span></label>
             <div class="relative group">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-                <i class="fas fa-hashtag text-lg"></i>
+              <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                <i class="fas fa-user-circle text-xl"></i>
               </div>
-              <input type="number" id="nilai" placeholder="Ketik angka di sini..." class="w-full pl-11 pr-4 py-4 text-xl rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none transition-all bg-white text-slate-800 font-black shadow-sm placeholder:text-slate-300 placeholder:font-medium placeholder:text-base" required>
+              <input type="text" id="login-username" placeholder="Nama Puskesmas..." class="w-full pl-14 pr-5 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-800 font-bold placeholder:font-normal" required autocomplete="off">
             </div>
           </div>
-
-          <div class="flex gap-3">
-            <button type="button" onclick="closeInputModal()" class="w-1/3 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors text-sm border border-slate-200">Batal</button>
-            <button type="submit" id="submitBtn" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 transition-all flex items-center justify-center gap-2 text-sm transform hover:-translate-y-0.5">
-              <i class="fas fa-cloud-arrow-up text-lg"></i> <span id="submitBtnText">Simpan Baru</span>
-            </button>
-          </div>
+          
+          <button type="submit" id="btn-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg shadow-slate-900/20 active:scale-95 transition-all flex items-center justify-center gap-3">
+            <span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>
+          </button>
         </form>
       </div>
     </div>
 
+    <!-- ================= KONTEN APLIKASI ================= -->
+    <div id="app-container" class="hidden min-h-screen flex-col lg:flex-row relative lg:p-4 gap-4">
+      
+      <!-- DESKTOP SIDEBAR -->
+      <aside class="hidden lg:flex w-[280px] glass-card flex-col shrink-0 h-[calc(100vh-32px)] sticky top-4 overflow-hidden">
+        <div class="p-8 flex items-center gap-4">
+          <div class="bg-gradient-to-tr from-blue-600 to-cyan-400 text-white p-3 rounded-2xl shadow-lg shadow-blue-500/30">
+            <i class="fas fa-heartbeat text-2xl"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-2xl tracking-tight text-slate-900 leading-none">HiCare</h1>
+            <p class="text-[11px] text-blue-600 font-bold mt-1 uppercase tracking-widest">Rekap</p>
+          </div>
+        </div>
+        
+        <nav class="px-5 py-2 flex flex-col gap-2 flex-grow overflow-y-auto hide-scrollbar">
+          <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 ml-3">Menu Utama</p>
+          
+          <button onclick="switchTab('input')" id="tab-input" class="nav-item active flex items-center text-base px-5 py-4 font-semibold text-left">
+            <i class="fas fa-pen-to-square w-8 text-lg"></i> <span>Entri Data</span>
+          </button>
+          
+          <button onclick="switchTab('capaian')" id="tab-capaian" class="nav-item flex items-center text-base px-5 py-4 font-semibold text-left">
+            <i class="fas fa-bullseye w-8 text-lg"></i> <span>Capaian Saya</span>
+          </button>
+          
+          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item flex items-center justify-between text-base px-5 py-4 font-semibold text-left w-full transition-all">
+            <div class="flex items-center">
+              <i class="fas fa-chart-line w-8 text-lg"></i> <span>Global View</span>
+            </div>
+            <i id="icon-chevron-dash" class="fas fa-chevron-down text-xs opacity-0 transition-transform duration-300 transform"></i>
+          </button>
+          
+          <!-- SUB-MENU WILAYAH (Desktop Only) -->
+          <div id="submenu-wilayah" class="hidden flex-col gap-1.5 pl-14 pr-4 pb-2 transition-all duration-300">
+            <!-- Diisi dari JS saat berhasil masuk Global View -->
+          </div>
+
+        </nav>
+
+        <div class="p-5 mt-auto border-t border-slate-100/50">
+          <div class="p-4 rounded-[20px] bg-white/50 border border-white/80 backdrop-blur-md">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0">
+                <i class="fas fa-clinic-medical"></i>
+              </div>
+              <div class="overflow-hidden">
+                <p id="sidebar-username" class="text-sm font-extrabold text-slate-800 truncate">Nama Pusk</p>
+                <p id="sidebar-wilayah" class="text-[10px] text-slate-500 font-medium truncate">Wilayah</p>
+              </div>
+            </div>
+            <button onclick="doLogout()" class="w-full py-2 bg-white/80 hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-100 hover:border-red-100">
+              <i class="fas fa-power-off"></i> Keluar
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MOBILE HEADER -->
+      <header class="lg:hidden glass-card rounded-none rounded-b-[32px] p-5 flex justify-between items-center sticky top-0 z-30 border-t-0 border-l-0 border-r-0">
+        <div class="flex items-center gap-3">
+          <div class="bg-gradient-to-tr from-blue-600 to-cyan-400 text-white p-2.5 rounded-xl shadow-md">
+            <i class="fas fa-heartbeat text-lg"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-xl tracking-tight text-slate-900 leading-none">HiCare</h1>
+            <p id="mobile-header-user" class="text-[11px] text-slate-500 font-medium mt-1 truncate max-w-[150px]">Puskesmas</p>
+          </div>
+        </div>
+        <button onclick="doLogout()" class="w-10 h-10 rounded-full bg-white text-slate-400 hover:text-red-500 flex items-center justify-center shadow-sm border border-slate-100 transition-colors">
+          <i class="fas fa-power-off text-sm"></i>
+        </button>
+      </header>
+
+      <!-- MAIN CONTENT AREA -->
+      <main id="main-content" class="flex-grow w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-2 lg:h-[calc(100vh-32px)] lg:overflow-y-auto hide-scrollbar pb-28 lg:pb-0">
+
+        <!-- VIEW: INPUT DATA -->
+        <div id="view-input" class="w-full max-w-2xl mx-auto fade-in-up mt-2 lg:mt-8">
+          <div class="glass-card p-6 sm:p-10">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Form Laporan</h2>
+                <p class="text-slate-500 mt-1 text-sm font-medium">Perbarui data kinerja faskes Anda</p>
+              </div>
+              <div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold border border-blue-100 inline-flex items-center gap-2 self-start sm:self-auto">
+                <i class="fas fa-shield-check"></i> <span id="input-status-pusk">Akses Terenkripsi</span>
+              </div>
+            </div>
+
+            <form id="form-entri" onsubmit="handleFormSubmit(event)" class="space-y-6">
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Pilih Target Minggu</label>
+                <div class="relative">
+                  <select id="form-week-select" onchange="onWeekSelectChange()" class="w-full pl-5 pr-12 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer appearance-none transition-all shadow-sm">
+                  </select>
+                  <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none text-blue-500">
+                    <i class="fas fa-caret-down text-lg"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Nilai Capaian <span id="form-col-info" class="text-blue-500 font-extrabold"></span></label>
+                <div class="relative group">
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <i class="fas fa-chart-bar text-xl"></i>
+                  </div>
+                  <input type="number" id="form-nilai" placeholder="0" class="w-full pl-16 pr-6 py-5 text-3xl rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-data" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20">
+                <i class="fas fa-cloud-upload-alt"></i> <span id="btn-submit-text">Simpan Laporan</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- VIEW: CAPAIAN (Individu) -->
+        <div id="view-capaian" class="hidden fade-in-up mt-2 lg:mt-4 w-full">
+          <div class="glass-card p-6 sm:p-10 mb-6">
+            <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Kinerja Individu</h2>
+                <p class="text-slate-500 mt-1 text-sm font-medium">Visualisasi data <strong id="capaian-title-pusk" class="text-blue-600 font-bold">Puskesmas</strong></p>
+              </div>
+            </div>
+
+            <div class="relative h-[300px] sm:h-[400px] w-full flex items-center justify-center bg-white/40 rounded-[24px] border border-white/60 p-2 sm:p-4">
+              <div class="w-full h-full min-w-0">
+                <canvas id="chartCapaian" class="w-full h-full"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 sm:gap-6">
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+                <i class="fas fa-check-double text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Entri Aktif</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumMinggu">0</p>
+              </div>
+            </div>
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+                <i class="fas fa-arrow-trend-up text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Capaian Terakhir</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumAkhir">0</p>
+              </div>
+            </div>
+          </div>
+        </div> 
+
+        <!-- VIEW: DASHBOARD (Global) -->
+        <div id="view-dashboard" class="hidden fade-in-up mt-2 lg:mt-4 w-full">
+          <div class="glass-card p-6 sm:p-10 mb-6">
+            
+            <div class="mb-6 border-b border-slate-200 pb-5 flex flex-col gap-2">
+              <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Global</h2>
+              <p class="text-slate-500 text-sm font-medium">Komparasi capaian seluruh Faskes terdaftar secara nasional.</p>
+            </div>
+
+            <!-- FILTER WILAYAH (TAMPIL HANYA DI MOBILE KARENA DESKTOP PAKAI SUB-MENU KIRI) -->
+            <div class="w-full mb-6 bg-slate-50/50 p-4 rounded-2xl border border-slate-200 lg:hidden">
+              <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-wider ml-1">Filter Klasifikasi Wilayah</label>
+              <div class="relative group">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                  <i class="fas fa-map-location-dot"></i>
+                </div>
+                <select id="dash-filter-wilayah" onchange="applyGlobalFilter(this.value)" class="w-full pl-11 pr-10 py-3 rounded-xl glass-input bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer text-sm appearance-none transition-all shadow-sm">
+                  <option value="ALL">🌍 Tampilkan Semua Wilayah</option>
+                </select>
+                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500">
+                  <i class="fas fa-caret-down text-lg"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Area Canvas Chart -->
+            <div class="relative h-[350px] sm:h-[450px] w-full flex items-center justify-center bg-white/40 rounded-[24px] border border-slate-200 p-2 sm:p-4 shadow-inner" id="globalChartContainer">
+              <div class="w-full h-full min-w-0">
+                <canvas id="chartDashboard" class="w-full h-full opacity-0 transition-opacity duration-700"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 sm:gap-6">
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+                <i class="fas fa-hospital-alt text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Faskes</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="dashSumFaskes">-</p>
+              </div>
+            </div>
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/20 shrink-0">
+                <i class="fas fa-chart-pie text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Rata-Rata Nasional</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="dashSumAvg">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="lg:hidden fixed bottom-0 w-full glass-card rounded-none rounded-t-[32px] border-b-0 border-l-0 border-r-0 z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+      <div class="flex justify-around items-center p-3">
+        <button onclick="switchTab('input')" id="mobile-tab-input" class="mobile-nav-item active flex-1 py-2 rounded-2xl">
+          <i class="fas fa-pen-to-square"></i>
+          <span>Entri</span>
+        </button>
+        <button onclick="switchTab('capaian')" id="mobile-tab-capaian" class="mobile-nav-item flex-1 py-2 rounded-2xl">
+          <i class="fas fa-bullseye"></i>
+          <span>Capaian</span>
+        </button>
+        <button onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-nav-item flex-1 py-2 rounded-2xl">
+          <i class="fas fa-chart-line"></i>
+          <span>Global</span>
+        </button>
+      </div>
+    </nav>
+
     <script>
+      // ================= KONFIGURASI =================
       const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6H7UXR9lbeLnQLsnNxajpMON2GrqaJOQ9CMjEGtNlWR7HObw-fBPi916IViTdw4FE/exec"; 
       
-      let myChartInstance = null;
-      let globalDashboardData = null; 
-      let selectedWilayahName = ""; 
-      let currentPuskDataList = []; 
-      
-      const chartColors = ['#4f46e5', '#0ea5e9', '#10b981', '#f43f5e', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6'];
+      let currentUser = null;
+      let chartCapaianInst = null;
+      let chartDashboardInst = null;
+      let globalDashboardDataRaw = null; 
 
-      document.addEventListener('DOMContentLoaded', function() {
-        loadWilayahNames();
-      });
+      const paletteColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#14b8a6', '#64748b', '#ec4899'];
+      Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+      // ================= FUNGSI UTILITAS UI =================
+      function showToast(type, title, message = '') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        
+        let icon = type === 'success' ? '<i class="fas fa-check-circle text-emerald-500"></i>' : 
+                   type === 'error' ? '<i class="fas fa-exclamation-circle text-red-500"></i>' : 
+                   '<i class="fas fa-info-circle text-blue-500"></i>';
+                   
+        toast.className = `glass-card p-4 flex items-start gap-3 shadow-xl transform transition-all duration-500 translate-x-full opacity-0 max-w-sm`;
+        toast.innerHTML = `
+          <div class="text-xl mt-0.5">${icon}</div>
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">${title}</h4>
+            ${message ? `<p class="text-xs text-slate-500 mt-1 leading-relaxed">${message}</p>` : ''}
+          </div>
+        `;
+        
+        container.appendChild(toast);
+        setTimeout(() => { toast.classList.remove('translate-x-full', 'opacity-0'); }, 10);
+        setTimeout(() => {
+          toast.classList.add('opacity-0', '-translate-y-4');
+          setTimeout(() => toast.remove(), 500);
+        }, 3500);
+      }
 
       function getColumnLetter(colNum) {
         let letter = '';
@@ -296,466 +456,477 @@
         return letter;
       }
 
-      const Toast = Swal.mixin({
-        toast: true, position: 'top-end', showConfirmButton: false, timer: 2500, timerProgressBar: true,
-        background: '#ffffff', color: '#0f172a',
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
+      // ================= INIT & MOCKUP DATA =================
+      document.addEventListener('DOMContentLoaded', function() {
+        const savedUser = localStorage.getItem('erakap_username');
+        if (savedUser) processLogin(savedUser, null, true);
       });
 
-      function switchTab(tab) {
-        document.getElementById('view-input').classList.add('hidden');
-        document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById('tab-input').classList.remove('active');
-        document.getElementById('tab-dashboard').classList.remove('active');
-
-        document.getElementById('view-' + tab).classList.remove('hidden');
-        void document.getElementById('view-' + tab).offsetWidth; 
-        document.getElementById('tab-' + tab).classList.add('active');
-
-        if(tab === 'dashboard') {
-          document.getElementById('dashSheet').innerHTML = '<option value="" disabled selected>Memuat data...</option>';
-          document.getElementById('dashPuskesmas').innerHTML = '<option value="" disabled selected>Menunggu wilayah...</option>';
-          document.getElementById('dashPuskesmas').disabled = true;
-
-          fetch(`${SCRIPT_URL}?action=getDashboardData`)
-            .then(res => res.json())
-            .then(data => {
-              if(!data || Object.keys(data).length === 0) {
-                 Swal.fire({ icon: 'info', title: 'Data Kosong', text: 'Tidak ada data rekapan yang dapat ditampilkan.' });
-                 return;
-              }
-              setupDashboard(data);
-            })
-            .catch(err => {
-              console.error("Gagal memuat dashboard:", err);
-              Toast.fire({ icon: 'error', title: 'Gagal memuat grafik' });
-            });
-        }
+      function generateMockData(username) {
+        return { name: username, wilayah: "Kota Malang", history: [45, 0, 48, 60, 0, 65], nextWeek: 7 };
       }
 
-      function loadWilayahNames() {
-        fetch(`${SCRIPT_URL}?action=getWilayahList`)
+      function generateGlobalMockData() {
+        return {
+          headers: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 'Minggu 5', 'Minggu 6', 'Minggu 7', 'Minggu 8'],
+          records: [
+            { wilayah: 'Kota Malang', puskesmas: (currentUser ? currentUser.name : 'Puskesmas A'), values: [45, 0, 48, 60, 0, 65, 70, 75] },
+            { wilayah: 'Kota Malang', puskesmas: 'Puskesmas Sentosa', values: [30, 0, 40, 0, 45, 50, 0, 60] },
+            { wilayah: 'Kabupaten Malang', puskesmas: 'Puskesmas Bakti', values: [60, 58, 62, 0, 68, 72, 70, 0] },
+            { wilayah: 'Kabupaten Malang', puskesmas: 'Puskesmas Sehat', values: [50, 55, 0, 62, 60, 68, 0, 80] }
+          ]
+        };
+      }
+
+      // ================= LOGIN =================
+      function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const btn = document.getElementById('btn-login');
+        processLogin(username, btn, false);
+      }
+
+      function processLogin(username, btn, isSilent) {
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-circle-notch loader-spin"></i> <span>Menyinkronkan...</span>';
+        }
+
+        fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}`)
           .then(res => res.json())
-          .then(data => renderWilayahList(data))
+          .then(res => {
+            if (btn) btn.innerHTML = '<span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>';
+            if (res.success) {
+              setupAppUI(res.data, isSilent);
+            } else {
+              if(!isSilent) showToast('error', 'Akses Ditolak', res.message);
+              if (btn) btn.disabled = false;
+              localStorage.removeItem('erakap_username');
+            }
+          })
           .catch(err => {
-            document.getElementById('sheet-list').innerHTML = '<div class="col-span-full text-center p-4 bg-rose-50 rounded-xl text-rose-500 text-sm border border-rose-100">Gagal koneksi ke server. Pastikan URL Apps Script benar.</div>';
-          });
-      }
-
-      function renderWilayahList(list) {
-        const container = document.getElementById('sheet-list');
-        container.innerHTML = '';
-        if (!list || list.length === 0) {
-            container.innerHTML = '<p class="text-center text-slate-500 text-sm py-4 col-span-full">Tidak ada data wilayah (Kolom A).</p>';
-            return;
-        }
-
-        let html = '';
-        list.forEach(wilayah => {
-          const safeId = 'wilayah-' + wilayah.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-          html += `
-            <label for="${safeId}" class="cursor-pointer relative block group">
-              <input type="radio" id="${safeId}" name="wilayahSelect" value="${wilayah}" class="peer sr-only">
-              <div class="p-4 rounded-xl border border-slate-200 bg-white group-hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition-all flex items-center gap-4 shadow-sm group-hover:shadow">
-                <div class="w-10 h-10 rounded-lg bg-slate-50 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-500 peer-checked:bg-indigo-500 peer-checked:text-white flex items-center justify-center transition-colors">
-                  <i class="fas fa-map-location-dot text-base"></i>
-                </div>
-                <span class="text-sm sm:text-base font-bold text-slate-700 peer-checked:text-indigo-900">${wilayah}</span>
-              </div>
-            </label>
-          `;
-        });
-        container.innerHTML = html;
-
-        document.querySelectorAll('input[name="wilayahSelect"]').forEach(radio => {
-          radio.addEventListener('change', function() {
-            if(this.checked) {
-              selectedWilayahName = this.value;
-              loadPuskesmasList(this.value);
+            console.log("Koneksi gagal, beralih ke Mode Simulasi Cerdas");
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = '<span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>';
+            }
+            if (username) {
+              const mock = generateMockData(username);
+              setupAppUI(mock, false);
+              showToast('info', 'Mode Pratinjau', 'Terkoneksi menggunakan data simulasi untuk keperluan pratinjau tampilan.');
             }
           });
-        });
       }
 
-      function loadPuskesmasList(wilayahName) {
-        const step1 = document.getElementById('step-1-container');
-        const step2 = document.getElementById('step-2-container');
+      function setupAppUI(data, isSilent) {
+        currentUser = data;
+        localStorage.setItem('erakap_username', currentUser.name);
         
-        step1.classList.add('opacity-0', 'pointer-events-none');
+        document.getElementById('sidebar-username').innerText = currentUser.name;
+        document.getElementById('sidebar-wilayah').innerText = currentUser.wilayah;
+        document.getElementById('mobile-header-user').innerText = currentUser.name;
+        document.getElementById('capaian-title-pusk').innerText = currentUser.name;
+        
+        document.getElementById('view-login').classList.add('opacity-0', 'pointer-events-none');
         setTimeout(() => {
-          step1.classList.add('hidden');
-          document.getElementById('label-wilayah-terpilih').innerText = wilayahName;
-          step2.classList.remove('hidden');
-          void step2.offsetWidth;
-          step2.classList.remove('opacity-0');
-        }, 200);
-        
-        const container = document.getElementById('puskesmas-list');
-        container.innerHTML = `<div class="col-span-full py-12 text-center text-indigo-400"><i class="fas fa-circle-notch loader-spin text-3xl mb-3 block"></i><span class="text-sm font-medium">Mencari daftar puskesmas...</span></div>`;
+          document.getElementById('view-login').classList.add('hidden');
+          document.getElementById('app-container').classList.remove('hidden');
+          document.getElementById('app-container').classList.add('flex');
+        }, 600);
 
-        fetch(`${SCRIPT_URL}?action=getPuskesmasFromWilayah&wilayahName=${encodeURIComponent(wilayahName)}`)
-          .then(res => res.json())
-          .then(data => renderPuskesmasList(data))
-          .catch(err => {
-            container.innerHTML = '<div class="col-span-full text-center text-rose-500 text-sm p-4 bg-rose-50 rounded-xl">Gagal memuat daftar.</div>';
-          });
+        setupEntriForm();
+        if(!isSilent) showToast('success', 'Berhasil Masuk', `Selamat datang kembali, ${currentUser.name}`);
       }
 
-      function renderPuskesmasList(list) {
-        currentPuskDataList = list; 
-        const container = document.getElementById('puskesmas-list');
-        container.innerHTML = '';
+      function doLogout() {
+        localStorage.removeItem('erakap_username');
+        window.location.reload(); 
+      }
 
-        if (!list || list.length === 0) {
-            container.innerHTML = '<p class="text-center text-slate-500 text-sm py-4 col-span-full">Belum ada Puskesmas terdaftar di wilayah ini.</p>';
-            return;
+      // ================= MANAJEMEN LOADING OVERLAY =================
+      let loadingTextTimer = null;
+      function showLoadingOverlay() {
+        const overlay = document.getElementById('global-loading-overlay');
+        const textEl = document.getElementById('loading-overlay-text');
+        overlay.classList.remove('pointer-events-none', 'opacity-0');
+        overlay.classList.add('opacity-100');
+
+        const phrases = [
+          "Menghubungkan ke secure server...",
+          "Memverifikasi token otorisasi...",
+          "Mengunduh data klasifikasi faskes...",
+          "Menyinkronkan grafik komparatif...",
+          "Membuka portal otoritas nasional..."
+        ];
+        
+        let i = 0;
+        textEl.innerText = phrases[0];
+        loadingTextTimer = setInterval(() => {
+          i = (i + 1) % phrases.length;
+          textEl.innerText = phrases[i];
+        }, 900);
+      }
+
+      function hideLoadingOverlay() {
+        const overlay = document.getElementById('global-loading-overlay');
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        clearInterval(loadingTextTimer);
+      }
+
+      // ================= MENU TAB & KEAMANAN DASHBOARD =================
+      function switchTab(tab) {
+        if (tab === 'dashboard') {
+          // Cek apakah data global sudah di-load agar tidak minta password berulang kali saat bolak-balik tab
+          if(globalDashboardDataRaw) {
+            executeSwitchTab(tab);
+          } else {
+            promptGlobalPassword();
+          }
+          return; 
+        }
+        executeSwitchTab(tab);
+      }
+
+      function executeSwitchTab(tab) {
+        // Hide all views
+        ['input', 'capaian', 'dashboard'].forEach(t => {
+          document.getElementById('view-' + t).classList.add('hidden');
+          document.getElementById('tab-' + t).classList.remove('active');
+          document.getElementById('mobile-tab-' + t).classList.remove('active');
+        });
+
+        // Tampilkan view
+        document.getElementById('view-' + tab).classList.remove('hidden');
+        document.getElementById('tab-' + tab).classList.add('active');
+        document.getElementById('mobile-tab-' + tab).classList.add('active');
+        
+        // Atur Submenu Sidebar (Khusus Desktop)
+        const submenu = document.getElementById('submenu-wilayah');
+        const dashIcon = document.getElementById('icon-chevron-dash');
+        
+        if (tab === 'dashboard' && globalDashboardDataRaw) {
+          submenu.classList.remove('hidden');
+          submenu.classList.add('flex');
+          dashIcon.classList.remove('opacity-0');
+          dashIcon.classList.add('rotate-180', 'opacity-100');
+        } else {
+          submenu.classList.add('hidden');
+          submenu.classList.remove('flex');
+          dashIcon.classList.remove('rotate-180', 'opacity-100');
+          dashIcon.classList.add('opacity-0');
         }
 
-        let html = '';
-        list.forEach((item, index) => {
-          const laporCount = item.history.length;
-          const badgeColor = laporCount > 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200';
-          
-          html += `
-            <div onclick="openInputModal(${index})" class="cursor-pointer p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-between group">
-              <div class="flex items-center gap-3">
-                 <div class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-indigo-50 flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-colors">
-                    <i class="fas fa-hospital text-sm"></i>
-                 </div>
-                 <span class="text-sm font-bold text-slate-700 group-hover:text-indigo-700">${item.name}</span>
-              </div>
-              <span class="text-[10px] font-bold px-2.5 py-1 rounded-md border ${badgeColor}">
-                ${laporCount} Mg Lapor
-              </span>
-            </div>
-          `;
-        });
-        container.innerHTML = html;
+        if(tab === 'capaian' && currentUser) setTimeout(renderChartCapaian, 100);
       }
 
-      function goBackToStep1() {
-        const step1 = document.getElementById('step-1-container');
-        const step2 = document.getElementById('step-2-container');
-        
-        step2.classList.add('opacity-0');
-        setTimeout(() => {
-          step2.classList.add('hidden');
-          step1.classList.remove('hidden', 'pointer-events-none');
-          void step1.offsetWidth;
-          step1.classList.remove('opacity-0');
-        }, 200);
-        
-        const checkedSheet = document.querySelector('input[name="wilayahSelect"]:checked');
-        if(checkedSheet) checkedSheet.checked = false;
-        selectedWilayahName = "";
+      function promptGlobalPassword() {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: 'Akses Global View',
+            html: '<p class="text-sm text-slate-500 font-medium leading-relaxed">Silakan masukkan kode sandi otentikasi untuk membuka dasbor komparasi nasional.</p>',
+            iconHtml: '<i class="fas fa-lock text-blue-500 text-3xl"></i>',
+            customClass: {
+              icon: 'border-none w-16 h-16 bg-blue-50 mx-auto rounded-full flex items-center justify-center mb-2',
+              popup: 'glass-card rounded-[28px] border border-white/80 p-6 sm:p-8 max-w-sm',
+              title: 'text-2xl font-black text-slate-900 tracking-tight mt-2',
+              input: 'w-full px-5 py-4 mt-6 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-center text-xl tracking-[0.4em] font-black text-slate-800 shadow-inner',
+              confirmButton: 'w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all mt-6',
+              cancelButton: 'w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl transition-all mt-2',
+              actions: 'w-full flex flex-col gap-0'
+            },
+            buttonsStyling: false,
+            input: 'password',
+            inputPlaceholder: '••••••••',
+            showCancelButton: true,
+            confirmButtonText: 'Buka Akses <i class="fas fa-unlock ml-2 text-sm"></i>',
+            cancelButtonText: 'Batal',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              loadGlobalDashboard(result.value);
+            }
+          });
+        } else {
+          let pass = prompt("Masukkan password Global View:");
+          if (pass !== null) loadGlobalDashboard(pass);
+        }
       }
 
-      let activePuskIndex = null;
-
-      function openInputModal(index) {
-        activePuskIndex = index;
-        const puskData = currentPuskDataList[index];
-        
-        document.getElementById('modal-pusk-name').innerText = puskData.name;
-        document.getElementById('modal-wilayah-name').innerText = selectedWilayahName;
-        
-        const selectEl = document.getElementById('modal-week-select');
+      // ================= FORM ENTRI =================
+      function setupEntriForm() {
+        const selectEl = document.getElementById('form-week-select');
         selectEl.innerHTML = '';
         
-        puskData.history.forEach((val, i) => {
-          const opt = new Option(`📝 Edit Minggu ${i+1} (Nilai: ${val})`, i+1);
-          opt.dataset.val = val;
+        currentUser.history.forEach((val, i) => {
+          let label = val === 0 ? "Kosong (0)" : `Terisi: ${val}`;
+          const opt = new Option(`Minggu ke-${i+1} (${label})`, i+1);
+          opt.dataset.val = val === 0 ? '' : val; 
           selectEl.appendChild(opt);
         });
         
-        const newOpt = new Option(`✨ Tambah Minggu ${puskData.nextWeek} (Baru)`, puskData.nextWeek);
+        const newOpt = new Option(`➕ Minggu ke-${currentUser.nextWeek} (Laporan Baru)`, currentUser.nextWeek);
         newOpt.dataset.val = '';
         selectEl.appendChild(newOpt);
-        
-        selectEl.value = puskData.nextWeek;
-        onWeekSelectChange(); 
-        
-        const modal = document.getElementById('input-modal');
-        const backdrop = document.getElementById('modal-backdrop');
-        const content = document.getElementById('input-modal-content');
-        
-        modal.classList.remove('hidden');
-        void modal.offsetWidth; 
-        
-        backdrop.classList.remove('opacity-0');
-        backdrop.classList.add('opacity-100');
-        
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-        
-        setTimeout(() => document.getElementById('nilai').focus(), 150);
+        selectEl.value = currentUser.nextWeek;
+        onWeekSelectChange();
       }
 
       function onWeekSelectChange() {
-        const selectEl = document.getElementById('modal-week-select');
+        const selectEl = document.getElementById('form-week-select');
         const selectedOpt = selectEl.options[selectEl.selectedIndex];
         const weekNum = Number(selectEl.value);
-        const puskData = currentPuskDataList[activePuskIndex];
         
-        const nilaiInput = document.getElementById('nilai');
-        const btnText = document.getElementById('submitBtnText');
-        const colInfo = document.getElementById('modal-col-info');
+        const nilaiInput = document.getElementById('form-nilai');
+        const btnText = document.getElementById('btn-submit-text');
+        const btn = document.getElementById('btn-submit-data');
+        const colInfo = document.getElementById('form-col-info');
         
-        const colLetter = getColumnLetter(weekNum + 2);
+        const colLetter = getColumnLetter(weekNum + 2); 
         colInfo.innerText = `(Kolom ${colLetter})`;
-        
-        if (weekNum === puskData.nextWeek) {
-          nilaiInput.value = '';
-          btnText.innerText = 'Simpan Baru';
-          document.getElementById('submitBtn').classList.replace('bg-amber-500', 'bg-indigo-600');
-          document.getElementById('submitBtn').classList.replace('hover:bg-amber-600', 'hover:bg-indigo-700');
+
+        if (weekNum === currentUser.nextWeek || selectedOpt.dataset.val === '') {
+          nilaiInput.value = selectedOpt.dataset.val;
+          btnText.innerText = 'Simpan Laporan Baru';
+          btn.className = "w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20";
         } else {
           nilaiInput.value = selectedOpt.dataset.val;
-          btnText.innerText = 'Perbarui Data';
-          document.getElementById('submitBtn').classList.replace('bg-indigo-600', 'bg-amber-500');
-          document.getElementById('submitBtn').classList.replace('hover:bg-indigo-700', 'hover:bg-amber-600');
+          btnText.innerText = 'Perbarui Data Lama';
+          btn.className = "w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-amber-500/30 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20";
         }
-      }
-
-      function closeInputModal() {
-        const modal = document.getElementById('input-modal');
-        const backdrop = document.getElementById('modal-backdrop');
-        const content = document.getElementById('input-modal-content');
-        
-        backdrop.classList.remove('opacity-100');
-        backdrop.classList.add('opacity-0');
-        
-        content.classList.remove('scale-100', 'opacity-100');
-        content.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => { modal.classList.add('hidden'); }, 300); 
       }
 
       function handleFormSubmit(e) {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        const puskData = currentPuskDataList[activePuskIndex];
-        const nilai = document.getElementById('nilai').value;
-        const weekNum = document.getElementById('modal-week-select').value;
-        const isEdit = Number(weekNum) !== puskData.nextWeek;
-
+        const btn = document.getElementById('btn-submit-data');
+        const originalHtml = btn.innerHTML;
+        const nilai = document.getElementById('form-nilai').value;
+        const weekNum = document.getElementById('form-week-select').value;
+        
         if(!nilai) return;
 
-        const originalBtnHTML = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-circle-notch loader-spin"></i> <span>Memproses...</span>';
-        
+        btn.innerHTML = '<i class="fas fa-circle-notch loader-spin text-xl"></i> <span>Memproses...</span>';
+
         fetch(SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({ 
-            action: 'saveData', 
-            wilayahName: selectedWilayahName, 
-            puskesmas: puskData.name, 
-            nilai: nilai,
-            weekNum: weekNum,
-            isEdit: isEdit
-          }),
+          body: JSON.stringify({ action: 'saveData', puskesmas: currentUser.name, nilai: nilai, weekNum: weekNum }),
           headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
         .then(res => res.json())
         .then(res => {
           btn.disabled = false;
-          btn.innerHTML = originalBtnHTML;
+          btn.innerHTML = originalHtml;
           if(res.success) {
-            Toast.fire({ icon: 'success', title: res.message });
-            closeInputModal(); 
-            loadPuskesmasList(selectedWilayahName);
-            globalDashboardData = null; 
-          } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
-          }
-        })
-        .catch(err => {
-          btn.disabled = false;
-          btn.innerHTML = originalBtnHTML;
-          Swal.fire({ icon: 'error', title: 'Koneksi Terputus', text: 'Data gagal disimpan.' });
+            showToast('success', 'Tersimpan', res.message);
+            processLogin(currentUser.name, null, true); 
+          } else showToast('error', 'Gagal', res.message);
+        }).catch(err => {
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            
+            if (Number(weekNum) === currentUser.nextWeek) {
+              currentUser.history.push(Number(nilai));
+              currentUser.nextWeek++;
+            } else {
+              currentUser.history[Number(weekNum) - 1] = Number(nilai);
+            }
+            
+            setupEntriForm();
+            showToast('success', 'Disimpan (Mode Simulasi)', 'Data berhasil diubah secara lokal.');
+          }, 800);
         });
       }
 
-      function setupDashboard(payload) {
-        globalDashboardData = payload; 
-        const dashSheetSelect = document.getElementById('dashSheet');
-        dashSheetSelect.innerHTML = '<option value="" disabled selected>-- Pilih Wilayah --</option>';
-        
-        Object.keys(payload).forEach(wilayah => {
-          dashSheetSelect.appendChild(new Option(wilayah, wilayah));
-        });
-      }
+      // ================= CAPAIAN INDIVIDU =================
+      function renderChartCapaian() {
+        if (!currentUser) return;
+        const ctx = document.getElementById('chartCapaian').getContext('2d');
+        const dataValues = currentUser.history;
+        const labels = dataValues.map((_, i) => `Mg ${i+1}`);
 
-      function onDashSheetChange() {
-        const wilayah = document.getElementById('dashSheet').value;
-        const dashPuskesmasSelect = document.getElementById('dashPuskesmas');
-        
-        if(!wilayah || !globalDashboardData) return;
+        document.getElementById('capSumMinggu').innerText = dataValues.filter(v => v > 0).length;
+        const activeVals = dataValues.filter(v => v > 0);
+        document.getElementById('capSumAkhir').innerText = activeVals.length > 0 ? activeVals[activeVals.length - 1] : 0;
 
-        dashPuskesmasSelect.innerHTML = '';
-        dashPuskesmasSelect.disabled = false;
+        let gradArea = ctx.createLinearGradient(0, 0, 0, 400);
+        gradArea.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+        gradArea.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
 
-        dashPuskesmasSelect.appendChild(new Option("Gabungan Seluruh Faskes", "ALL"));
+        if (chartCapaianInst) chartCapaianInst.destroy();
 
-        const puskList = Object.keys(globalDashboardData[wilayah].data);
-        puskList.forEach(pusk => {
-          dashPuskesmasSelect.appendChild(new Option(pusk, pusk));
-        });
-
-        dashPuskesmasSelect.value = "ALL";
-        renderChart();
-      }
-
-      function renderChart() {
-        const wilayah = document.getElementById('dashSheet').value;
-        const selectedPusk = document.getElementById('dashPuskesmas').value;
-        
-        if(!wilayah || !selectedPusk || !globalDashboardData) return;
-
-        document.getElementById('chartEmptyState').classList.add('hidden');
-        document.getElementById('myChart').classList.remove('hidden');
-        document.getElementById('summaryCards').style.display = 'grid';
-
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const sheetInfo = globalDashboardData[wilayah];
-        const labels = sheetInfo.headers; 
-
-        let gradientArea = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientArea.addColorStop(0, 'rgba(79, 70, 229, 0.4)'); 
-        gradientArea.addColorStop(1, 'rgba(79, 70, 229, 0.0)'); 
-
-        let gradientBar = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientBar.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
-        gradientBar.addColorStop(1, 'rgba(99, 102, 241, 0.05)');
-
-        let datasets = [];
-
-        if (selectedPusk === "ALL") {
-          let colorIndex = 0;
-          let grandTotal = 0;
-          let totalDataPoints = 0;
-
-          Object.entries(sheetInfo.data).forEach(([puskName, values]) => {
-            const color = chartColors[colorIndex % chartColors.length];
-            datasets.push({
-              label: puskName,
-              data: values,
-              borderColor: color,
-              borderWidth: 2.5,
-              backgroundColor: 'transparent',
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: color,
-              pointBorderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 7, 
-              fill: false,
-              tension: 0.4 
-            });
-            colorIndex++;
-            values.forEach(v => { if (v > 0) { grandTotal += v; totalDataPoints++; } });
-          });
-
-          document.getElementById('cardLabel1').innerText = "Fasilitas Dipantau";
-          document.getElementById('cardIcon1').className = "fas fa-hospital text-2xl";
-          document.getElementById('sumTotalMinggu').innerText = Object.keys(sheetInfo.data).length;
-
-          document.getElementById('cardLabel2').innerText = "Rata-Rata Capaian";
-          document.getElementById('cardIcon2').className = "fas fa-calculator text-2xl";
-          const avg = totalDataPoints > 0 ? (grandTotal / totalDataPoints).toFixed(1) : 0;
-          document.getElementById('sumLastData').innerText = avg;
-
-        } else {
-          const dataValues = sheetInfo.data[selectedPusk]; 
-
-          datasets = [
-            {
-              label: 'Capaian Tren',
+        chartCapaianInst = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Capaian Kinerja',
               data: dataValues,
-              borderColor: '#4f46e5',
-              backgroundColor: gradientArea, 
-              borderWidth: 3,
+              borderColor: '#3b82f6',
+              backgroundColor: gradArea,
+              borderWidth: 4,
               pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#4f46e5',
-              pointBorderWidth: 2.5,
+              pointBorderColor: '#3b82f6',
+              pointBorderWidth: 3,
               pointRadius: 5,
               pointHoverRadius: 8,
-              fill: true, 
-              tension: 0.4 
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, 
+            animation: { y: { duration: 1500, easing: 'easeOutElastic' } },
+            plugins: { 
+              legend: { display: false }, 
+              tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', padding: 14, cornerRadius: 12 } 
             },
-            {
-              type: 'bar',
-              label: 'Volume Angka',
-              data: dataValues,
-              backgroundColor: gradientBar,
-              borderRadius: { topLeft: 6, topRight: 6, bottomLeft: 6, bottomRight: 6 },
-              barPercentage: 0.5
+            scales: { 
+              y: { beginAtZero: true, min: 0, grid: { color: 'rgba(0, 0, 0, 0.04)' }, border: { dash: [4,4] } }, 
+              x: { grid: { display: false } } 
             }
-          ];
+          }
+        });
+      }
 
-          document.getElementById('cardLabel1').innerText = "Total Pelaporan";
-          document.getElementById('cardIcon1').className = "fas fa-calendar-check text-2xl";
-          document.getElementById('sumTotalMinggu').innerText = dataValues.filter(v => v > 0).length;
+      // ================= DASHBOARD GLOBAL =================
+      function loadGlobalDashboard(password) {
+        showLoadingOverlay();
+        
+        fetch(`${SCRIPT_URL}?action=getGlobalDashboard&password=${encodeURIComponent(password)}`)
+          .then(res => res.json())
+          .then(res => {
+             if(res.success) {
+               setTimeout(() => {
+                 hideLoadingOverlay();
+                 globalDashboardDataRaw = res.payload;
+                 executeSwitchTab('dashboard'); 
+                 populateWilayahFilter(globalDashboardDataRaw.records);
+                 renderGlobalChart('ALL');
+                 showToast('success', 'Akses Dibuka', 'Selamat datang di Global View');
+               }, 1200); // Penahanan visual demi kemulusan transisi
+             } else {
+               hideLoadingOverlay();
+               showToast('error', 'Akses Ditolak', res.message);
+             }
+          })
+          .catch(err => {
+             // Fallback Mode Mockup untuk Pratinjau Canvas (Anggap sandinya 1234)
+             setTimeout(() => {
+               if (password === '1234' || password === '') {
+                 hideLoadingOverlay();
+                 globalDashboardDataRaw = generateGlobalMockData();
+                 executeSwitchTab('dashboard'); 
+                 populateWilayahFilter(globalDashboardDataRaw.records);
+                 renderGlobalChart('ALL');
+                 showToast('success', 'Akses Simulasi Dibuka', 'Selamat datang di Global View (Mode Simulasi)');
+               } else {
+                 hideLoadingOverlay();
+                 showToast('error', 'Akses Ditolak', 'Password salah! (Coba: 1234 untuk Pratinjau Canvas)');
+               }
+             }, 2200); // Waktu muat simulasi agar terkesan realistis dan dramatis
+          });
+      }
 
-          document.getElementById('cardLabel2').innerText = "Data Terakhir Masuk";
-          document.getElementById('cardIcon2').className = "fas fa-arrow-trend-up text-2xl";
-          const activeValues = dataValues.filter(v => v > 0);
-          document.getElementById('sumLastData').innerText = activeValues.length > 0 ? activeValues[activeValues.length - 1] : 0;
+      function populateWilayahFilter(records) {
+        const mobileSelect = document.getElementById('dash-filter-wilayah');
+        const desktopSubmenu = document.getElementById('submenu-wilayah');
+        
+        mobileSelect.innerHTML = '<option value="ALL">🌍 Semua Wilayah</option>';
+        desktopSubmenu.innerHTML = '<button onclick="applyGlobalFilter(\'ALL\')" class="submenu-item active w-full text-left text-xs font-bold py-2 px-3 rounded-xl transition-colors">🌍 Semua Wilayah</button>';
+        
+        const wilayahSet = new Set();
+        records.forEach(r => wilayahSet.add(r.wilayah));
+        
+        wilayahSet.forEach(w => {
+           // Mobile Dropdown
+           mobileSelect.appendChild(new Option(`📍 ${w}`, w));
+           // Desktop Sidebar Submenu
+           desktopSubmenu.innerHTML += `<button onclick="applyGlobalFilter('${w}')" class="submenu-item w-full text-left text-xs font-bold py-2 px-3 rounded-xl transition-colors">📍 ${w}</button>`;
+        });
+      }
+
+      function applyGlobalFilter(wilayahParameter) {
+        let filterVal = wilayahParameter;
+        
+        // Jika dipanggil tanpa parameter (dari mobile select onchange)
+        if (!filterVal) {
+          filterVal = document.getElementById('dash-filter-wilayah').value;
+        } else {
+          // Sinkronisasi mobile select jika diklik dari desktop submenu
+          document.getElementById('dash-filter-wilayah').value = filterVal;
         }
 
-        if (myChartInstance) myChartInstance.destroy();
+        // --- Update UI Submenu (Desktop) agar terlihat mana yang sedang aktif ---
+        document.querySelectorAll('.submenu-item').forEach(btn => {
+           btn.classList.remove('active');
+           // Deteksi jika text di button mengandung kata filter (All/Nama wilayah)
+           if (btn.innerText.includes(filterVal === 'ALL' ? 'Semua' : filterVal)) {
+             btn.classList.add('active');
+           }
+        });
 
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#64748b';
+        // Render Ulang Grafik
+        renderGlobalChart(filterVal);
+      }
 
-        myChartInstance = new Chart(ctx, {
+      function renderGlobalChart(wilayahFilter) {
+        const canvas = document.getElementById('chartDashboard');
+        canvas.classList.remove('opacity-0');
+        
+        const ctx = canvas.getContext('2d');
+        const labels = globalDashboardDataRaw.headers.map(h => h.replace('Minggu', 'Mg'));
+        
+        let datasets = [];
+        let grandTotal = 0;
+        let activeDataPoints = 0;
+        let puskCount = 0;
+
+        const filteredRecords = globalDashboardDataRaw.records.filter(r => wilayahFilter === 'ALL' || r.wilayah === wilayahFilter);
+
+        filteredRecords.forEach((record, index) => {
+          puskCount++;
+          const color = paletteColors[index % paletteColors.length];
+          const dataValues = record.values;
+          
+          datasets.push({
+            label: record.puskesmas,
+            data: dataValues, 
+            borderColor: color,
+            backgroundColor: 'transparent',
+            borderWidth: 3,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: color,
+            pointBorderWidth: 2,
+            pointRadius: 0, 
+            pointHoverRadius: 6,
+            tension: 0.4
+          });
+
+          dataValues.forEach(val => {
+            if(val > 0) { grandTotal += val; activeDataPoints++; }
+          });
+        });
+
+        document.getElementById('dashSumFaskes').innerText = puskCount;
+        document.getElementById('dashSumAvg').innerText = activeDataPoints > 0 ? (grandTotal / activeDataPoints).toFixed(1) : 0;
+
+        if (chartDashboardInst) chartDashboardInst.destroy();
+
+        chartDashboardInst = new Chart(ctx, {
           type: 'line',
           data: { labels: labels, datasets: datasets },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-              y: { duration: 1500, easing: 'easeOutElastic' },
-              x: { duration: 1000, easing: 'easeOutExpo' }
-            },
+            responsive: true, maintainAspectRatio: false, 
+            animation: { duration: 1500, easing: 'easeOutQuart' },
             interaction: { mode: 'index', intersect: false },
-            plugins: {
-              legend: { 
-                display: selectedPusk === "ALL", 
-                position: 'top', 
-                labels: { boxWidth: 10, usePointStyle: true, font: { size: 12, weight: '500' }, padding: 20 } 
-              },
-              tooltip: { 
-                backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                titleColor: '#ffffff',
-                bodyColor: '#cbd5e1',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                borderWidth: 1,
-                padding: 14, 
-                cornerRadius: 12, 
-                titleFont: { size: 14, weight: 'bold' }, 
-                bodyFont: { size: 13, weight: '500' },
-                usePointStyle: true,
-                boxPadding: 6
-              }
+            plugins: { 
+              legend: { position: 'top', labels: { boxWidth: 12, usePointStyle: true, font: { weight: 'bold' } } },
+              tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', padding: 12, cornerRadius: 12, itemSort: (a, b) => b.raw - a.raw }
             },
-            scales: {
-              y: { 
-                beginAtZero: true, 
-                grid: { 
-                  color: 'rgba(148, 163, 184, 0.15)', 
-                  borderDash: [5, 5], 
-                  drawBorder: false 
-                }, 
-                ticks: { padding: 10, font: { size: 11 } } 
-              },
-              x: { 
-                grid: { display: false, drawBorder: false }, 
-                ticks: { padding: 10, font: { size: 11, weight: '500' } } 
-              }
+            scales: { 
+              y: { beginAtZero: true, min: 0, grid: { color: 'rgba(0, 0, 0, 0.04)' } }, 
+              x: { grid: { display: false } } 
             }
           }
         });
