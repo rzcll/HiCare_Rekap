@@ -81,7 +81,7 @@
             <i class="fas fa-bullseye w-8 text-lg"></i> <span>Capaian Saya</span>
           </button>
           
-          <div class="mt-4">
+          <div class="mt-4" id="menu-global-container">
             <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item flex items-center justify-between text-base px-5 py-4 font-semibold text-left w-full">
               <div class="flex items-center"><i class="fas fa-chart-line w-8 text-lg"></i> <span>Global View</span></div>
               <i id="icon-chevron-dash" class="fas fa-chevron-down text-sm transition-transform opacity-0"></i>
@@ -103,9 +103,14 @@
                 <p id="sidebar-wilayah" class="text-xs text-slate-500 font-medium truncate">Wilayah</p>
               </div>
             </div>
-            <button onclick="doLogout()" class="w-full py-2.5 bg-white/90 hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 hover:border-red-200 shadow-sm">
-              <i class="fas fa-power-off"></i> Keluar Akun
-            </button>
+            <div class="flex gap-2">
+              <button onclick="refreshApp()" class="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-blue-200 shadow-sm">
+                <i id="icon-refresh-desktop" class="fas fa-sync-alt"></i> Refresh
+              </button>
+              <button onclick="doLogout()" class="w-full py-2.5 bg-white/90 hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 hover:border-red-200 shadow-sm">
+                <i class="fas fa-power-off"></i> Keluar
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -121,9 +126,14 @@
             <p id="mobile-header-user" class="text-[11px] text-slate-500 font-medium mt-1 truncate max-w-[150px]">Puskesmas</p>
           </div>
         </div>
-        <button onclick="doLogout()" class="w-10 h-10 rounded-full bg-white text-slate-400 hover:text-red-500 flex items-center justify-center shadow-md border border-slate-100 transition-colors">
-          <i class="fas fa-power-off text-sm"></i>
-        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="refreshApp()" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 hover:text-blue-700 flex items-center justify-center shadow-md border border-blue-100 transition-colors">
+            <i id="icon-refresh-mobile" class="fas fa-sync-alt text-sm"></i>
+          </button>
+          <button onclick="doLogout()" class="w-10 h-10 rounded-full bg-white text-slate-400 hover:text-red-500 flex items-center justify-center shadow-md border border-slate-100 transition-colors">
+            <i class="fas fa-power-off text-sm"></i>
+          </button>
+        </div>
       </header>
 
       <!-- MAIN CONTENT AREA -->
@@ -158,7 +168,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-white/30 p-5 rounded-3xl border border-white/60 shadow-inner">
                 <!-- Terlambat -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah pasien terlambat</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Pasien Terlambat</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-red-400 group-focus-within:text-red-500 transition-colors">
                       <i class="fas fa-user-clock text-lg"></i>
@@ -168,7 +178,7 @@
                 </div>
                 <!-- WA Kirim -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah WA Terkirim</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">WA Terkirim</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-blue-400 group-focus-within:text-blue-500 transition-colors">
                       <i class="fab fa-whatsapp text-lg"></i>
@@ -178,7 +188,7 @@
                 </div>
                 <!-- WA Respon -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah Jumlah Respon WA</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Respon WA</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-purple-400 group-focus-within:text-purple-500 transition-colors">
                       <i class="fas fa-reply-all text-lg"></i>
@@ -188,7 +198,7 @@
                 </div>
                 <!-- Datang -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah Jumlah Pasien Datang</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Pasien Datang</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-emerald-400 group-focus-within:text-emerald-500 transition-colors">
                       <i class="fas fa-hospital-user text-lg"></i>
@@ -237,7 +247,7 @@
                 <i class="fas fa-hospital-user text-2xl"></i>
               </div>
               <div>
-                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Jumlah Jumlah Pasien Datang (Akhir)</p>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Pasien Datang (Akhir)</p>
                 <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumAkhir">0</p>
               </div>
             </div>
@@ -269,10 +279,10 @@
                   <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-1">Metrik Grafik</label>
                   <div class="relative">
                     <select id="dash-filter-metric" onchange="applyGlobalFilter()" class="w-full pl-4 pr-10 py-3 rounded-xl glass-input border border-white/60 focus:border-blue-400 outline-none text-slate-800 font-bold cursor-pointer text-sm appearance-none shadow-sm">
-                      <option value="terlambat">🔴 Jumlah pasien terlambat</option>
-                      <option value="waKirim">🔵 Jumlah WA Terkirim</option>
-                      <option value="waRespon">🟣 Jumlah Jumlah Respon WA</option>
-                      <option value="datang" selected>🟢 Jumlah Jumlah Pasien Datang</option>
+                      <option value="terlambat">🔴 Pasien Terlambat</option>
+                      <option value="waKirim">🔵 WA Terkirim</option>
+                      <option value="waRespon">🟣 Respon WA</option>
+                      <option value="datang" selected>🟢 Pasien Datang</option>
                     </select>
                     <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500"><i class="fas fa-caret-down"></i></div>
                   </div>
@@ -346,6 +356,29 @@
       const paletteColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#14b8a6', '#64748b', '#ec4899'];
       Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 
+      // ================= PLUGIN GRAFIK: TAMPILKAN ANGKA =================
+      const showValuesPlugin = {
+        id: 'showValues',
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          chart.data.datasets.forEach((dataset, i) => {
+            const meta = chart.getDatasetMeta(i);
+            if (!meta.hidden) {
+              meta.data.forEach((element, index) => {
+                const val = dataset.data[index];
+                if (val > 0) { // Hanya tampilkan jika > 0 agar tidak berantakan di bawah
+                  ctx.fillStyle = dataset.borderColor; 
+                  ctx.font = 'bold 11px "Plus Jakarta Sans"';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'bottom';
+                  ctx.fillText(val, element.x, element.y - 8); 
+                }
+              });
+            }
+          });
+        }
+      };
+
       // ================= FUNGSI UTILITAS UI =================
       function showToast(type, title, message = '') {
         const container = document.getElementById('toast-container');
@@ -385,8 +418,8 @@
 
       // ================= INIT & MOCKUP MODE =================
       document.addEventListener('DOMContentLoaded', function() {
-        const savedUser = localStorage.getItem('erakap_username');
-        if (savedUser) processLogin(savedUser, null, true);
+        // Fitur auto-login dimatikan agar pengguna wajib memasukkan username setiap aplikasi dibuka
+        localStorage.removeItem('erakap_username');
       });
 
       function generateMockData(username) {
@@ -453,6 +486,8 @@
             }
             if (username) {
               const mock = generateMockData(username);
+              // Untuk mencoba mode admin di pratinjau canvas, ubah manual isAdmin menjadi true jika username tertentu
+              if(username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin dinas') mock.isAdmin = true;
               setupAppUI(mock, false);
             }
           });
@@ -473,9 +508,50 @@
           document.getElementById('app-container').classList.remove('hidden');
           document.getElementById('app-container').classList.add('flex');
           
+          // === PENGATURAN VISIBILITAS MENU (ROLE-BASED) ===
+          const tabInput = document.getElementById('tab-input');
+          const tabCapaian = document.getElementById('tab-capaian');
+          const menuGlobal = document.getElementById('menu-global-container');
+          
+          const mobInput = document.getElementById('mobile-tab-input');
+          const mobCapaian = document.getElementById('mobile-tab-capaian');
+          const mobDash = document.getElementById('mobile-tab-dashboard');
+
           if(currentUser.isAdmin) {
+             // 1. Jika ADMIN: Sembunyikan Input & Capaian Individu
+             tabInput.classList.add('hidden');
+             tabInput.classList.remove('flex');
+             tabCapaian.classList.add('hidden');
+             tabCapaian.classList.remove('flex');
+             
+             mobInput.classList.add('hidden');
+             mobInput.classList.remove('flex-1');
+             mobCapaian.classList.add('hidden');
+             mobCapaian.classList.remove('flex-1');
+             
+             // Pastikan Global View Tampil
+             menuGlobal.classList.remove('hidden');
+             mobDash.classList.remove('hidden');
+             mobDash.classList.add('flex-1');
+
              loadGlobalDashboard("", true);
           } else {
+             // 2. Jika PUSKESMAS: Sembunyikan Global View secara permanen
+             menuGlobal.classList.add('hidden');
+             mobDash.classList.add('hidden');
+             mobDash.classList.remove('flex-1');
+             
+             // Pastikan Input & Capaian Individu Tampil
+             tabInput.classList.remove('hidden');
+             tabInput.classList.add('flex');
+             tabCapaian.classList.remove('hidden');
+             tabCapaian.classList.add('flex');
+             
+             mobInput.classList.remove('hidden');
+             mobInput.classList.add('flex-1');
+             mobCapaian.classList.remove('hidden');
+             mobCapaian.classList.add('flex-1');
+
              setupEntriForm();
              executeSwitchTab('input');
           }
@@ -499,6 +575,59 @@
           document.getElementById('login-username').value = '';
           currentUser = null;
         }, 100);
+      }
+
+      function refreshApp() {
+        if (!currentUser) return;
+        
+        showToast('info', 'Menyegarkan...', 'Menarik data terbaru dari server.');
+        const iconRefreshDesktop = document.getElementById('icon-refresh-desktop');
+        const iconRefreshMobile = document.getElementById('icon-refresh-mobile');
+        
+        if(iconRefreshDesktop) iconRefreshDesktop.classList.add('animate-spin');
+        if(iconRefreshMobile) iconRefreshMobile.classList.add('animate-spin');
+
+        const isGlobalView = document.getElementById('tab-dashboard').classList.contains('active');
+
+        // Jika user sedang di menu global
+        if (isGlobalView && globalDashboardDataRaw) {
+            fetch(`${SCRIPT_URL}?action=getGlobalDashboard&skipPassword=true`)
+              .then(res => res.json())
+              .then(res => {
+                 if(iconRefreshDesktop) iconRefreshDesktop.classList.remove('animate-spin');
+                 if(iconRefreshMobile) iconRefreshMobile.classList.remove('animate-spin');
+                 if(res.success) {
+                   globalDashboardDataRaw = res.payload;
+                   const activeFilter = document.getElementById('dash-filter-wilayah').value;
+                   renderGlobalChart(activeFilter);
+                   showToast('success', 'Berhasil', 'Data Global diperbarui.');
+                 } else showToast('error', 'Gagal', res.message);
+              })
+              .catch(err => {
+                 if(iconRefreshDesktop) iconRefreshDesktop.classList.remove('animate-spin');
+                 if(iconRefreshMobile) iconRefreshMobile.classList.remove('animate-spin');
+              });
+        } else {
+            // Jika user sedang di menu Data Individu
+            fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(currentUser.name)}`)
+              .then(res => res.json())
+              .then(res => {
+                 if(iconRefreshDesktop) iconRefreshDesktop.classList.remove('animate-spin');
+                 if(iconRefreshMobile) iconRefreshMobile.classList.remove('animate-spin');
+                 if(res.success) {
+                   currentUser = res.data;
+                   setupEntriForm();
+                   if (document.getElementById('tab-capaian').classList.contains('active')) {
+                      renderChartCapaian();
+                   }
+                   showToast('success', 'Berhasil', 'Data capaian diperbarui.');
+                 } else showToast('error', 'Gagal', res.message);
+              })
+              .catch(err => {
+                 if(iconRefreshDesktop) iconRefreshDesktop.classList.remove('animate-spin');
+                 if(iconRefreshMobile) iconRefreshMobile.classList.remove('animate-spin');
+              });
+        }
       }
 
       // ================= MENU TAB & KEAMANAN DASHBOARD =================
@@ -728,7 +857,9 @@
               { label: 'Datang', data: dataD, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointRadius: 4, pointHoverRadius: 6, tension: 0.4 }
             ]
           },
+          plugins: [showValuesPlugin],
           options: {
+            layout: { padding: { top: 25 } },
             responsive: true, maintainAspectRatio: false, 
             animation: { y: { duration: 1500, easing: 'easeOutElastic' } },
             interaction: { mode: 'index', intersect: false },
@@ -873,7 +1004,9 @@
         chartDashboardInst = new Chart(ctx, {
           type: 'line',
           data: { labels: labels, datasets: datasets },
+          plugins: [showValuesPlugin],
           options: {
+            layout: { padding: { top: 25 } },
             responsive: true, maintainAspectRatio: false, 
             animation: { duration: 1500, easing: 'easeOutQuart' },
             interaction: { mode: 'index', intersect: false },
