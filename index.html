@@ -78,7 +78,7 @@
             <i class="fas fa-pen-to-square w-8 text-lg"></i> <span>Entri Data</span>
           </button>
           <button onclick="switchTab('capaian')" id="tab-capaian" class="nav-item flex items-center text-base px-5 py-4 font-semibold text-left">
-            <i class="fas fa-bullseye w-8 text-lg"></i> <span>Capaian Saya</span>
+            <i class="fas fa-bullseye w-8 text-lg"></i> <span>Grafik Capaian</span>
           </button>
           
           <div class="mt-4" id="menu-global-container">
@@ -154,9 +154,9 @@
 
             <form id="form-entri" onsubmit="handleFormSubmit(event)" class="space-y-6">
               <div>
-                <label class="block text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Pilih Target Minggu <span id="form-col-info" class="text-blue-500 font-extrabold ml-1 normal-case text-[10px]"></span></label>
+                <label class="block text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Periode Laporan</label>
                 <div class="relative">
-                  <select id="form-week-select" onchange="onWeekSelectChange()" class="w-full pl-5 pr-12 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer appearance-none transition-all shadow-sm">
+                  <select id="form-week-select" onchange="onWeekSelectChange()" class="w-full pl-5 pr-12 py-4 rounded-2xl bg-white border border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer appearance-none transition-all shadow-sm">
                   </select>
                   <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none text-blue-500">
                     <i class="fas fa-caret-down text-lg"></i>
@@ -165,45 +165,45 @@
               </div>
 
               <!-- 4 Input Metrik -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-white/30 p-5 rounded-3xl border border-white/60 shadow-inner">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-slate-100/90 p-5 rounded-3xl border border-slate-200 shadow-inner">
                 <!-- Terlambat -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Pasien Terlambat</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah Pasien Terlambat</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-red-400 group-focus-within:text-red-500 transition-colors">
                       <i class="fas fa-user-clock text-lg"></i>
                     </div>
-                    <input type="number" id="form-terlambat" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                    <input type="number" id="form-terlambat" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl bg-white border border-slate-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
                   </div>
                 </div>
                 <!-- WA Kirim -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">WA Terkirim</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah WA Terkirim</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-blue-400 group-focus-within:text-blue-500 transition-colors">
                       <i class="fab fa-whatsapp text-lg"></i>
                     </div>
-                    <input type="number" id="form-wa-kirim" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                    <input type="number" id="form-wa-kirim" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl bg-white border border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
                   </div>
                 </div>
                 <!-- WA Respon -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Respon WA</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah Respon WA</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-purple-400 group-focus-within:text-purple-500 transition-colors">
                       <i class="fas fa-reply-all text-lg"></i>
                     </div>
-                    <input type="number" id="form-wa-respon" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-purple-400 focus:ring-4 focus:ring-purple-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                    <input type="number" id="form-wa-respon" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl bg-white border border-slate-300 focus:border-purple-400 focus:ring-4 focus:ring-purple-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
                   </div>
                 </div>
                 <!-- Datang -->
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Pasien Datang</label>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Jumlah Pasien Datang</label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-emerald-400 group-focus-within:text-emerald-500 transition-colors">
                       <i class="fas fa-hospital-user text-lg"></i>
                     </div>
-                    <input type="number" id="form-datang" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                    <input type="number" id="form-datang" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl bg-white border border-slate-300 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
                   </div>
                 </div>
               </div>
@@ -247,7 +247,7 @@
                 <i class="fas fa-hospital-user text-2xl"></i>
               </div>
               <div>
-                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Pasien Datang (Akhir)</p>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Jumlah Pasien Datang (Akhir)</p>
                 <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumAkhir">0</p>
               </div>
             </div>
@@ -279,10 +279,10 @@
                   <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-1">Metrik Grafik</label>
                   <div class="relative">
                     <select id="dash-filter-metric" onchange="applyGlobalFilter()" class="w-full pl-4 pr-10 py-3 rounded-xl glass-input border border-white/60 focus:border-blue-400 outline-none text-slate-800 font-bold cursor-pointer text-sm appearance-none shadow-sm">
-                      <option value="terlambat">🔴 Pasien Terlambat</option>
-                      <option value="waKirim">🔵 WA Terkirim</option>
-                      <option value="waRespon">🟣 Respon WA</option>
-                      <option value="datang" selected>🟢 Pasien Datang</option>
+                      <option value="terlambat">🔴 Jumlah Pasien Terlambat</option>
+                      <option value="waKirim">🔵 Jumlah WA Terkirim</option>
+                      <option value="waRespon">🟣 Jumlah Respon WA</option>
+                      <option value="datang" selected>🟢 Jumlah Pasien Datang</option>
                     </select>
                     <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500"><i class="fas fa-caret-down"></i></div>
                   </div>
@@ -335,7 +335,7 @@
         </button>
         <button onclick="switchTab('capaian')" id="mobile-tab-capaian" class="mobile-nav-item flex-1 py-2 rounded-2xl">
           <i class="fas fa-bullseye"></i>
-          <span>Capaian</span>
+          <span>Grafik Capaian</span>
         </button>
         <button onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-nav-item flex-1 py-2 rounded-2xl">
           <i class="fas fa-chart-line"></i>
@@ -731,8 +731,12 @@
         selectEl.innerHTML = '';
         
         currentUser.history.forEach((val, i) => {
+          let reportDate = new Date();
+          reportDate.setDate(reportDate.getDate() - (currentUser.nextWeek - (i+1)) * 7);
+          let dateStr = reportDate.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+
           let label = `T:${val.terlambat}|W:${val.waKirim}|R:${val.waRespon}|D:${val.datang}`;
-          const opt = new Option(`Minggu ke-${i+1} (${label})`, i+1);
+          const opt = new Option(`Rekap (${dateStr}) - [${label}]`, i+1);
           opt.dataset.t = val.terlambat;
           opt.dataset.wk = val.waKirim;
           opt.dataset.wr = val.waRespon;
@@ -740,7 +744,8 @@
           selectEl.appendChild(opt);
         });
         
-        const newOpt = new Option(`➕ Minggu ke-${currentUser.nextWeek} (Laporan Baru)`, currentUser.nextWeek);
+        let todayStr = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+        const newOpt = new Option(`➕ Rekap (${todayStr}) (Laporan Baru)`, currentUser.nextWeek);
         selectEl.appendChild(newOpt);
         selectEl.value = currentUser.nextWeek;
         onWeekSelectChange();
@@ -753,11 +758,6 @@
         
         const btnText = document.getElementById('btn-submit-text');
         const btn = document.getElementById('btn-submit-data');
-        const colInfo = document.getElementById('form-col-info');
-        
-        const startCol = (weekNum - 1) * 4 + 3;
-        const endCol = startCol + 3;
-        colInfo.innerText = `(Kolom ${getColumnLetter(startCol)} - ${getColumnLetter(endCol)})`;
 
         if (weekNum === currentUser.nextWeek || selectedOpt.dataset.t === undefined) {
           document.getElementById('form-terlambat').value = '';
@@ -834,7 +834,12 @@
       function renderChartCapaian() {
         if (!currentUser) return;
         const ctx = document.getElementById('chartCapaian').getContext('2d');
-        const labels = currentUser.history.map((_, i) => `Mg ${i+1}`);
+        
+        const labels = currentUser.history.map((_, i) => {
+          let d = new Date();
+          d.setDate(d.getDate() - (currentUser.history.length - i) * 7);
+          return d.toLocaleDateString('id-ID', {day: '2-digit', month: 'short'});
+        });
 
         const dataT = currentUser.history.map(v => v.terlambat);
         const dataWk = currentUser.history.map(v => v.waKirim);
@@ -961,7 +966,12 @@
         canvas.classList.remove('opacity-0');
         
         const ctx = canvas.getContext('2d');
-        const labels = globalDashboardDataRaw.headers.map(h => h.replace('Minggu', 'Mg'));
+        const labels = globalDashboardDataRaw.headers.map((_, i) => {
+          let d = new Date();
+          d.setDate(d.getDate() - (globalDashboardDataRaw.headers.length - i - 1) * 7);
+          return d.toLocaleDateString('id-ID', {day: '2-digit', month: 'short'});
+        });
+        
         const selectedMetric = document.getElementById('dash-filter-metric').value;
         
         let datasets = [];
