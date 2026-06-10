@@ -4,436 +4,335 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>E-Rekap Puskesmas</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
       
-      /* TRUE FULLSCREEN FIX */
-      body { 
-        font-family: 'Plus Jakarta Sans', sans-serif; 
-        background-color: #f1f5f9; 
-        color: #0f172a;
-        margin: 0;
-        overflow: hidden; /* Mencegah layar utama bisa di-scroll */
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh; /* Adaptif terhadap address bar mobile */
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      /* Animated Aurora Background */
-      .bg-aurora {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        z-index: -1;
-        background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
-                    radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 25%);
-        filter: blur(60px);
-        animation: auroraMove 15s ease-in-out infinite alternate;
-      }
-
-      @keyframes auroraMove {
-        0% { transform: scale(1) translate(0, 0); }
-        50% { transform: scale(1.2) translate(5%, 5%); }
-        100% { transform: scale(1) translate(-5%, -5%); }
-      }
-      
-      /* Custom SweetAlert Backdrop Blur */
-      div.swal2-container {
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        background: rgba(15, 23, 42, 0.5) !important;
-      }
-
-      /* Glassmorphism Cards - SHADOW DIPERTEGAS */
-      .glass-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.9);
-        box-shadow: 0 15px 40px -5px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-      }
-      
-      /* Flush Panels (Sidebar/Nav) - SHADOW DIPERTEGAS */
-      .glass-panel {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-      }
-
-      .glass-input {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.9);
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 4px 10px rgba(15, 23, 42, 0.05);
-      }
-
-      /* Navigation Items */
-      .nav-item {
-        position: relative;
-        color: #64748b; 
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 16px;
-      }
-      .nav-item:hover:not(.active) { 
-        background-color: rgba(255,255,255,0.9); 
-        color: #3b82f6; 
-        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
-      }
-      .nav-item.active { 
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-        color: #ffffff; 
-        font-weight: 600; 
-        /* Bayangan aktif dipertegas */
-        box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.6);
-      }
-      
-      /* Submenu Item Styles */
-      .submenu-item {
-        color: #64748b;
-        transition: all 0.3s ease;
-      }
-      .submenu-item:hover:not(.active) { 
-        color: #3b82f6; 
-        background-color: rgba(241, 245, 249, 0.9); 
-        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-      }
-      .submenu-item.active { 
-        background-color: #eff6ff; 
-        color: #2563eb; 
-        font-weight: 700; 
-        box-shadow: inset 2px 0 0 #2563eb;
-      }
-
-      @media (max-width: 1023px) {
-        .mobile-nav-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          color: #94a3b8;
-          font-size: 0.7rem;
-          font-weight: 600;
-          gap: 4px;
-          transition: all 0.3s;
-        }
-        .mobile-nav-item i { font-size: 1.25rem; transition: transform 0.3s; }
-        .mobile-nav-item.active { color: #3b82f6; }
-        .mobile-nav-item.active i { transform: translateY(-2px); text-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); }
-      }
-
-      .hide-scrollbar::-webkit-scrollbar { display: none; }
-      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+      body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; color: #0f172a; margin: 0; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+      .bg-aurora { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%), radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 25%); filter: blur(60px); animation: auroraMove 15s ease-in-out infinite alternate; }
+      @keyframes auroraMove { 0% { transform: scale(1) translate(0, 0); } 50% { transform: scale(1.2) translate(5%, 5%); } 100% { transform: scale(1) translate(-5%, -5%); } }
+      .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.15); border-radius: 28px; }
+      .glass-input { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+      .nav-item { position: relative; color: #64748b; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 16px; box-shadow: 0 4px 10px transparent; }
+      .nav-item:hover:not(.active) { background-color: rgba(255,255,255,0.9); color: #3b82f6; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05); }
+      .nav-item.active { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; font-weight: 600; box-shadow: 0 8px 25px -6px rgba(37, 99, 235, 0.5); }
+      @media (max-width: 1023px) { .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.7rem; font-weight: 600; gap: 4px; transition: all 0.3s; } .mobile-nav-item i { font-size: 1.25rem; transition: transform 0.3s; } .mobile-nav-item.active { color: #3b82f6; } .mobile-nav-item.active i { transform: translateY(-2px); } }
+      .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
       @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-      
-      .loader-spin { animation: spin 1s linear infinite; }
-      @keyframes spin { 100% { transform: rotate(360deg); } }
-
-      input[type=number]::-webkit-inner-spin-button, 
-      input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+      .loader-spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
+      input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
   </head>
 
-  <body class="text-slate-800 antialiased">
-    
-    <!-- Background Effect -->
+  <body class="min-h-screen text-slate-800 antialiased relative">
     <div class="bg-aurora"></div>
-
-    <!-- NOTIFIKASI TERPUSAT -->
-    <div id="toast-container" class="fixed inset-0 z-[120] flex flex-col items-center justify-center gap-4 pointer-events-none p-4"></div>
-
-    <!-- ================= PREMIUM FULLSCREEN LOADING OVERLAY ================= -->
-    <div id="global-loading-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
-      <div class="glass-card rounded-[28px] p-10 max-w-sm w-11/12 text-center flex flex-col items-center gap-6 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-white/10">
-        <!-- Glowing Ring Loader -->
-        <div class="relative flex items-center justify-center w-24 h-24">
-          <div class="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
-          <div class="absolute inset-0 rounded-full border-4 border-t-blue-400 border-r-cyan-300 loader-spin shadow-[0_0_25px_rgba(59,130,246,0.8)]"></div>
-          <i class="fas fa-shield-halved text-3xl text-blue-400 animate-pulse"></i>
-        </div>
-        <div>
-          <h3 class="font-extrabold text-white text-xl tracking-wide">Membuka Akses</h3>
-          <p id="loading-overlay-text" class="text-xs text-blue-200 mt-2 font-semibold tracking-wide uppercase">Memverifikasi otorisasi...</p>
-        </div>
-      </div>
-    </div>
+    <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-3 items-center w-full max-w-sm px-4 pointer-events-none"></div>
 
     <!-- ================= HALAMAN LOGIN ================= -->
-    <div id="view-login" class="fixed inset-0 z-50 flex items-center justify-center p-5 transition-all duration-700 bg-slate-900/10 backdrop-blur-sm">
-      <div class="w-full max-w-[400px] glass-card rounded-[32px] p-10 fade-in-up">
+    <div id="view-login" class="absolute inset-0 z-50 flex items-center justify-center p-5 transition-all duration-700 bg-slate-900/20 backdrop-blur-md">
+      <div class="w-full max-w-[400px] glass-card p-10 fade-in-up">
+        <div class="w-24 h-24 mx-auto mb-6 drop-shadow-xl">
+            <img src="https://github.com/rzcll/WebsiteHiCare/blob/main/LOGO%20HiCare.png?raw=true" alt="Logo Puskesmas" class="w-full h-full object-contain">
+        </div>
         <div class="text-center mb-10">
-          <div class="w-28 h-28 flex items-center justify-center mx-auto mb-4 drop-shadow-xl hover:scale-105 transition-transform duration-300">
-            <img src="https://github.com/rzcll/WebsiteHiCare/blob/main/LOGO%20HiCare.png?raw=true" alt="Logo HiCare" class="w-full h-full object-contain">
-          </div>
           <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Portal Faskes</h1>
-          <p class="text-sm text-slate-500 mt-2 font-medium">Masuk untuk mengelola pelaporan</p>
+          <p class="text-sm text-slate-500 mt-2 font-medium">Masuk untuk mengelola data pelaporan</p>
         </div>
 
         <form onsubmit="handleLogin(event)" class="space-y-6">
-          <div>
-            <div class="relative group">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                <i class="fas fa-user-circle text-xl"></i>
-              </div>
-              <input type="text" id="login-username" placeholder="Nama Puskesmas..." class="w-full pl-14 pr-5 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-800 font-bold placeholder:font-normal" required autocomplete="off">
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+              <i class="fas fa-user-circle text-xl"></i>
             </div>
+            <input type="text" id="login-username" placeholder="Nama Puskesmas..." class="w-full pl-14 pr-5 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-800 font-bold placeholder:font-normal shadow-sm" required autocomplete="off">
           </div>
-          
-          <button type="submit" id="btn-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.4)] active:scale-95 transition-all flex items-center justify-center gap-3">
+          <button type="submit" id="btn-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-[0_10px_20px_rgba(15,23,42,0.3)] active:scale-95 transition-all flex items-center justify-center gap-3">
             <span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>
           </button>
         </form>
       </div>
     </div>
 
-    <!-- ================= KONTEN APLIKASI (FULLSCREEN WRAPPER) ================= -->
-    <div id="app-container" class="hidden fixed inset-0 flex-col lg:flex-row z-10 w-full h-full">
-      
-      <!-- DESKTOP SIDEBAR (Flush Left) -->
-      <!-- DITAMBAHKAN SHADOW GELAP -->
-      <aside class="hidden lg:flex w-[280px] glass-panel border-r border-white/60 flex-col shrink-0 h-full z-20 shadow-[8px_0_30px_rgba(15,23,42,0.12)] relative">
-        <div class="p-8 flex items-center gap-4">
-          <div class="w-14 h-14 flex items-center justify-center shrink-0 drop-shadow-md">
-            <img src="https://github.com/rzcll/WebsiteHiCare/blob/main/LOGO%20HiCare.png?raw=true" alt="Logo HiCare" class="w-full h-full object-contain">
+    <!-- ================= KONTEN APLIKASI ================= -->
+    <div id="app-container" class="hidden h-screen w-full flex-col lg:flex-row relative">
+      <!-- DESKTOP SIDEBAR -->
+      <aside class="hidden lg:flex w-[280px] glass-card flex-col shrink-0 h-screen rounded-none rounded-r-[32px] border-l-0 shadow-[10px_0_40px_-10px_rgba(15,23,42,0.15)] z-40">
+        <div class="p-8 flex items-center gap-4 border-b border-white/40">
+          <div class="w-12 h-12 drop-shadow-md shrink-0">
+             <img src="https://github.com/rzcll/WebsiteHiCare/blob/main/LOGO%20HiCare.png?raw=true" alt="Logo" class="w-full h-full object-contain">
           </div>
           <div>
             <h1 class="font-extrabold text-2xl tracking-tight text-slate-900 leading-none">HiCare</h1>
-            <p class="text-[11px] text-blue-600 font-bold mt-1 uppercase tracking-widest">Rekap</p>
+            <p class="text-[11px] text-blue-600 font-bold mt-1 uppercase tracking-widest">Portal Faskes</p>
           </div>
         </div>
         
-        <nav class="px-5 py-2 flex flex-col gap-2 flex-grow overflow-y-auto hide-scrollbar">
+        <nav class="px-5 py-6 flex flex-col gap-3 flex-grow overflow-y-auto hide-scrollbar">
           <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 ml-3">Menu Utama</p>
-          
           <button onclick="switchTab('input')" id="tab-input" class="nav-item active flex items-center text-base px-5 py-4 font-semibold text-left">
             <i class="fas fa-pen-to-square w-8 text-lg"></i> <span>Entri Data</span>
           </button>
-          
           <button onclick="switchTab('capaian')" id="tab-capaian" class="nav-item flex items-center text-base px-5 py-4 font-semibold text-left">
             <i class="fas fa-bullseye w-8 text-lg"></i> <span>Capaian Saya</span>
           </button>
           
-          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item flex items-center justify-between text-base px-5 py-4 font-semibold text-left w-full transition-all">
-            <div class="flex items-center">
-              <i class="fas fa-chart-line w-8 text-lg"></i> <span>Global View</span>
+          <div class="mt-4">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-item flex items-center justify-between text-base px-5 py-4 font-semibold text-left w-full">
+              <div class="flex items-center"><i class="fas fa-chart-line w-8 text-lg"></i> <span>Global View</span></div>
+              <i id="icon-chevron-dash" class="fas fa-chevron-down text-sm transition-transform opacity-0"></i>
+            </button>
+            <div id="submenu-wilayah" class="hidden flex-col gap-1 mt-2 pl-12 pr-4 transition-all">
+              <!-- Filter Wilayah akan di-inject disini khusus Desktop -->
             </div>
-            <i id="icon-chevron-dash" class="fas fa-chevron-down text-xs opacity-0 transition-transform duration-300 transform"></i>
-          </button>
-          
-          <!-- SUB-MENU WILAYAH (Desktop Only) -->
-          <div id="submenu-wilayah" class="hidden flex-col gap-1.5 pl-14 pr-4 pb-2 transition-all duration-300">
-            <!-- Diisi dari JS -->
           </div>
         </nav>
 
-        <div class="p-6 mt-auto border-t border-slate-200/50">
-          <div class="p-4 rounded-[20px] bg-white/70 border border-white/90 shadow-[0_8px_20px_rgba(15,23,42,0.06)] backdrop-blur-md">
-            <div class="flex items-center gap-3 mb-3">
+        <div class="p-5 mt-auto border-t border-white/40">
+          <div class="p-5 rounded-[20px] bg-white/60 border border-white/80 shadow-sm backdrop-blur-md">
+            <div class="flex items-center gap-3 mb-4">
               <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-inner">
                 <i class="fas fa-clinic-medical"></i>
               </div>
               <div class="overflow-hidden">
                 <p id="sidebar-username" class="text-sm font-extrabold text-slate-800 truncate">Nama Pusk</p>
-                <p id="sidebar-wilayah" class="text-[10px] text-slate-500 font-medium truncate">Wilayah</p>
+                <p id="sidebar-wilayah" class="text-xs text-slate-500 font-medium truncate">Wilayah</p>
               </div>
             </div>
-            <button onclick="doLogout()" class="w-full py-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-100 shadow-[0_4px_10px_rgba(15,23,42,0.05)] hover:shadow-[0_4px_15px_rgba(239,68,68,0.15)]">
-              <i class="fas fa-power-off"></i> Keluar
+            <button onclick="doLogout()" class="w-full py-2.5 bg-white/90 hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 hover:border-red-200 shadow-sm">
+              <i class="fas fa-power-off"></i> Keluar Akun
             </button>
           </div>
         </div>
       </aside>
 
-      <!-- MOBILE HEADER (Flush Top) -->
-      <!-- DITAMBAHKAN SHADOW GELAP -->
-      <header class="lg:hidden w-full glass-panel border-b border-white/60 p-4 flex justify-between items-center z-30 shrink-0 shadow-[0_5px_25px_rgba(15,23,42,0.1)] relative">
+      <!-- MOBILE HEADER -->
+      <header class="lg:hidden glass-card rounded-none rounded-b-[32px] p-5 flex justify-between items-center sticky top-0 z-30 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.15)]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 flex items-center justify-center shrink-0 drop-shadow-sm">
-            <img src="https://github.com/rzcll/WebsiteHiCare/blob/main/LOGO%20HiCare.png?raw=true" alt="Logo HiCare" class="w-full h-full object-contain">
+          <div class="w-10 h-10 drop-shadow-md">
+             <img src="https://github.com/rzcll/WebsiteHiCare/blob/main/LOGO%20HiCare.png?raw=true" alt="Logo" class="w-full h-full object-contain">
           </div>
           <div>
             <h1 class="font-extrabold text-xl tracking-tight text-slate-900 leading-none">HiCare</h1>
             <p id="mobile-header-user" class="text-[11px] text-slate-500 font-medium mt-1 truncate max-w-[150px]">Puskesmas</p>
           </div>
         </div>
-        <button onclick="doLogout()" class="w-10 h-10 rounded-full bg-white text-slate-400 hover:text-red-500 flex items-center justify-center shadow-[0_4px_10px_rgba(15,23,42,0.05)] hover:shadow-[0_4px_15px_rgba(239,68,68,0.15)] border border-slate-100 transition-all">
+        <button onclick="doLogout()" class="w-10 h-10 rounded-full bg-white text-slate-400 hover:text-red-500 flex items-center justify-center shadow-md border border-slate-100 transition-colors">
           <i class="fas fa-power-off text-sm"></i>
         </button>
       </header>
 
-      <!-- MAIN CONTENT AREA (Scrollable) -->
-      <main id="main-content" class="flex-1 w-full h-full overflow-y-auto hide-scrollbar relative z-10 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-8">
-        
-        <div class="max-w-5xl mx-auto w-full">
-          <!-- VIEW: INPUT DATA -->
-          <div id="view-input" class="w-full max-w-2xl mx-auto fade-in-up mt-2 lg:mt-4">
-            <div class="glass-card rounded-[32px] p-6 sm:p-10">
-              <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Form Laporan</h2>
-                  <p class="text-slate-500 mt-1 text-sm font-medium">Perbarui data kinerja faskes Anda</p>
-                </div>
-                <div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold border border-blue-100 inline-flex items-center gap-2 self-start sm:self-auto shadow-sm">
-                  <i class="fas fa-shield-check"></i> <span id="input-status-pusk">Akses Terenkripsi</span>
-                </div>
+      <!-- MAIN CONTENT AREA -->
+      <main id="main-content" class="flex-grow w-full h-full p-4 sm:p-6 lg:p-10 overflow-y-auto hide-scrollbar pb-28 lg:pb-10 relative">
+
+        <!-- VIEW: INPUT DATA -->
+        <div id="view-input" class="w-full max-w-3xl mx-auto fade-in-up mt-2 lg:mt-4">
+          <div class="glass-card p-6 sm:p-10 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.15)]">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Form Laporan Mingguan</h2>
+                <p class="text-slate-500 mt-1 text-sm font-medium">Perbarui metrik kinerja faskes Anda</p>
               </div>
-
-              <form id="form-entri" onsubmit="handleFormSubmit(event)" class="space-y-6">
-                <div>
-                  <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Pilih Target Minggu</label>
-                  <div class="relative">
-                    <select id="form-week-select" onchange="onWeekSelectChange()" class="w-full pl-5 pr-12 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer appearance-none transition-all">
-                    </select>
-                    <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none text-blue-500">
-                      <i class="fas fa-caret-down text-lg"></i>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Nilai Capaian <span id="form-col-info" class="text-blue-500 font-extrabold"></span></label>
-                  <div class="relative group">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                      <i class="fas fa-chart-bar text-xl"></i>
-                    </div>
-                    <input type="number" id="form-nilai" placeholder="0" class="w-full pl-16 pr-6 py-5 text-3xl rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-900 font-black" required>
-                  </div>
-                </div>
-
-                <button type="submit" id="btn-submit-data" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-[0_10px_30px_rgba(37,99,235,0.4)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20">
-                  <i class="fas fa-cloud-upload-alt"></i> <span id="btn-submit-text">Simpan Laporan</span>
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- VIEW: CAPAIAN (Individu) -->
-          <div id="view-capaian" class="hidden fade-in-up mt-2 lg:mt-4 w-full">
-            <div class="glass-card rounded-[32px] p-6 sm:p-10 mb-6">
-              <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Kinerja Individu</h2>
-                  <p class="text-slate-500 mt-1 text-sm font-medium">Visualisasi data <strong id="capaian-title-pusk" class="text-blue-600 font-bold">Puskesmas</strong></p>
-                </div>
-              </div>
-
-              <div class="relative h-[300px] sm:h-[400px] w-full flex items-center justify-center bg-white/50 rounded-[24px] border border-white/80 p-2 sm:p-4 shadow-inner">
-                <div class="w-full h-full min-w-0">
-                  <canvas id="chartCapaian" class="w-full h-full"></canvas>
-                </div>
+              <div class="bg-blue-50/80 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold border border-blue-100 shadow-sm inline-flex items-center gap-2 self-start sm:self-auto backdrop-blur">
+                <i class="fas fa-shield-check"></i> <span id="input-status-pusk">Akses Terenkripsi</span>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 sm:gap-6">
-              <div class="glass-card rounded-[28px] p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
-                <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(37,99,235,0.3)] shrink-0">
-                  <i class="fas fa-check-double text-2xl"></i>
-                </div>
-                <div>
-                  <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Entri Aktif</p>
-                  <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumMinggu">0</p>
-                </div>
-              </div>
-              <div class="glass-card rounded-[28px] p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
-                <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(16,185,129,0.3)] shrink-0">
-                  <i class="fas fa-arrow-trend-up text-2xl"></i>
-                </div>
-                <div>
-                  <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Capaian Terakhir</p>
-                  <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumAkhir">0</p>
-                </div>
-              </div>
-            </div>
-          </div> 
-
-          <!-- VIEW: DASHBOARD (Global) -->
-          <div id="view-dashboard" class="hidden fade-in-up mt-2 lg:mt-4 w-full">
-            <div class="glass-card rounded-[32px] p-6 sm:p-10 mb-6">
-              
-              <div class="mb-6 border-b border-slate-200/60 pb-5 flex flex-col gap-2">
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Global</h2>
-                <p class="text-slate-500 text-sm font-medium">Komparasi capaian seluruh Faskes terdaftar secara nasional.</p>
-              </div>
-
-              <!-- FILTER WILAYAH (TAMPIL HANYA DI MOBILE KARENA DESKTOP PAKAI SUB-MENU KIRI) -->
-              <div class="w-full mb-6 bg-white/50 p-4 rounded-2xl border border-white/80 shadow-sm lg:hidden">
-                <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-wider ml-1">Filter Klasifikasi Wilayah</label>
-                <div class="relative group">
-                  <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                    <i class="fas fa-map-location-dot"></i>
-                  </div>
-                  <select id="dash-filter-wilayah" onchange="applyGlobalFilter(this.value)" class="w-full pl-11 pr-10 py-3 rounded-xl glass-input bg-white/60 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer text-sm appearance-none transition-all">
-                    <option value="ALL">🌍 Tampilkan Semua Wilayah</option>
+            <form id="form-entri" onsubmit="handleFormSubmit(event)" class="space-y-6">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-wider ml-2">Pilih Target Minggu <span id="form-col-info" class="text-blue-500 font-extrabold ml-1 normal-case text-[10px]"></span></label>
+                <div class="relative">
+                  <select id="form-week-select" onchange="onWeekSelectChange()" class="w-full pl-5 pr-12 py-4 rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none text-slate-800 font-bold cursor-pointer appearance-none transition-all shadow-sm">
                   </select>
-                  <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500">
+                  <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none text-blue-500">
                     <i class="fas fa-caret-down text-lg"></i>
                   </div>
                 </div>
               </div>
 
-              <!-- Area Canvas Chart -->
-              <div class="relative h-[350px] sm:h-[450px] w-full flex items-center justify-center bg-white/50 rounded-[24px] border border-white/80 p-2 sm:p-4 shadow-inner" id="globalChartContainer">
-                <div class="w-full h-full min-w-0">
-                  <canvas id="chartDashboard" class="w-full h-full opacity-0 transition-opacity duration-700"></canvas>
+              <!-- 4 Input Metrik -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-white/30 p-5 rounded-3xl border border-white/60 shadow-inner">
+                <!-- Terlambat -->
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Pasien Terlambat</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-red-400 group-focus-within:text-red-500 transition-colors">
+                      <i class="fas fa-user-clock text-lg"></i>
+                    </div>
+                    <input type="number" id="form-terlambat" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                  </div>
                 </div>
+                <!-- WA Kirim -->
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">WA Terkirim</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-blue-400 group-focus-within:text-blue-500 transition-colors">
+                      <i class="fab fa-whatsapp text-lg"></i>
+                    </div>
+                    <input type="number" id="form-wa-kirim" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                  </div>
+                </div>
+                <!-- WA Respon -->
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Respon WA</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-purple-400 group-focus-within:text-purple-500 transition-colors">
+                      <i class="fas fa-reply-all text-lg"></i>
+                    </div>
+                    <input type="number" id="form-wa-respon" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-purple-400 focus:ring-4 focus:ring-purple-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                  </div>
+                </div>
+                <!-- Datang -->
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-2">Pasien Datang</label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-emerald-400 group-focus-within:text-emerald-500 transition-colors">
+                      <i class="fas fa-hospital-user text-lg"></i>
+                    </div>
+                    <input type="number" id="form-datang" placeholder="0" class="w-full pl-12 pr-4 py-3.5 text-xl rounded-2xl glass-input focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 outline-none transition-all text-slate-900 font-black shadow-sm" required>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-data" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20">
+                <i class="fas fa-cloud-upload-alt"></i> <span id="btn-submit-text">Simpan Laporan</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- VIEW: CAPAIAN (Individu) -->
+        <div id="view-capaian" class="hidden fade-in-up mt-2 lg:mt-4 w-full">
+          <div class="glass-card p-6 sm:p-10 mb-6 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.15)]">
+            <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Kinerja Individu</h2>
+                <p class="text-slate-500 mt-1 text-sm font-medium">Visualisasi corong data <strong id="capaian-title-pusk" class="text-blue-600 font-bold">Puskesmas</strong></p>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 sm:gap-6">
-              <div class="glass-card rounded-[28px] p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
-                <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(99,102,241,0.3)] shrink-0">
-                  <i class="fas fa-hospital-alt text-2xl"></i>
-                </div>
-                <div>
-                  <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Faskes</p>
-                  <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="dashSumFaskes">-</p>
-                </div>
-              </div>
-              <div class="glass-card rounded-[28px] p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
-                <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(245,158,11,0.3)] shrink-0">
-                  <i class="fas fa-chart-pie text-2xl"></i>
-                </div>
-                <div>
-                  <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Rata-Rata Nasional</p>
-                  <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="dashSumAvg">-</p>
-                </div>
+            <div class="relative h-[350px] sm:h-[450px] w-full flex items-center justify-center bg-white/50 rounded-[24px] border border-white/80 p-2 sm:p-4 shadow-inner">
+              <div class="w-full h-full min-w-0">
+                <canvas id="chartCapaian" class="w-full h-full"></canvas>
               </div>
             </div>
           </div>
 
-        </div> <!-- End of Max-W -->
-      </main>
+          <div class="grid grid-cols-2 gap-4 sm:gap-6">
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.1)]">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+                <i class="fas fa-calendar-check text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Entri</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumMinggu">0</p>
+              </div>
+            </div>
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.1)]">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+                <i class="fas fa-hospital-user text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Pasien Datang (Akhir)</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="capSumAkhir">0</p>
+              </div>
+            </div>
+          </div>
+        </div> 
 
-      <!-- MOBILE BOTTOM NAVIGATION (Flush Bottom) -->
-      <!-- DITAMBAHKAN SHADOW GELAP -->
-      <nav id="mobile-nav" class="lg:hidden absolute bottom-0 left-0 right-0 glass-panel rounded-none border-t border-white/60 z-40 pb-safe shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
-        <div class="flex justify-around items-center p-3">
-          <button onclick="switchTab('input')" id="mobile-tab-input" class="mobile-nav-item active flex-1 py-2 rounded-2xl">
-            <i class="fas fa-pen-to-square"></i>
-            <span>Entri</span>
-          </button>
-          <button onclick="switchTab('capaian')" id="mobile-tab-capaian" class="mobile-nav-item flex-1 py-2 rounded-2xl">
-            <i class="fas fa-bullseye"></i>
-            <span>Capaian</span>
-          </button>
-          <button onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-nav-item flex-1 py-2 rounded-2xl">
-            <i class="fas fa-chart-line"></i>
-            <span>Global</span>
-          </button>
+        <!-- VIEW: DASHBOARD (Global) -->
+        <div id="view-dashboard" class="hidden fade-in-up mt-2 lg:mt-4 w-full">
+          <div class="glass-card p-6 sm:p-10 mb-6 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.15)]">
+            <div class="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+              <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Global</h2>
+                <p class="text-slate-500 mt-1 text-sm font-medium">Komparasi capaian antar Faskes.</p>
+              </div>
+              
+              <!-- FILTER METRIK & WILAYAH (MOBILE ONLY) -->
+              <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                <div class="w-full sm:w-48 lg:hidden" id="mobile-wilayah-filter-container">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-1">Wilayah</label>
+                  <div class="relative">
+                    <select id="dash-filter-wilayah" onchange="applyGlobalFilter()" class="w-full pl-4 pr-10 py-3 rounded-xl glass-input border border-white/60 focus:border-blue-400 outline-none text-slate-800 font-bold cursor-pointer text-sm appearance-none shadow-sm">
+                      <option value="ALL">🌍 Semua Wilayah</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500"><i class="fas fa-caret-down"></i></div>
+                  </div>
+                </div>
+                
+                <div class="w-full sm:w-56">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider ml-1">Metrik Grafik</label>
+                  <div class="relative">
+                    <select id="dash-filter-metric" onchange="applyGlobalFilter()" class="w-full pl-4 pr-10 py-3 rounded-xl glass-input border border-white/60 focus:border-blue-400 outline-none text-slate-800 font-bold cursor-pointer text-sm appearance-none shadow-sm">
+                      <option value="terlambat">🔴 Pasien Terlambat</option>
+                      <option value="waKirim">🔵 WA Terkirim</option>
+                      <option value="waRespon">🟣 Respon WA</option>
+                      <option value="datang" selected>🟢 Pasien Datang</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500"><i class="fas fa-caret-down"></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative h-[380px] sm:h-[480px] w-full flex items-center justify-center bg-white/50 rounded-[24px] border border-white/80 p-2 sm:p-4 shadow-inner" id="globalChartContainer">
+              <div id="globalChartLoading" class="absolute flex flex-col items-center justify-center text-blue-500 z-10 hidden">
+                <i class="fas fa-circle-notch loader-spin text-5xl mb-4 drop-shadow-md"></i>
+                <p class="font-bold text-sm tracking-widest uppercase">Sinkronisasi Data...</p>
+              </div>
+              <div class="w-full h-full min-w-0">
+                <canvas id="chartDashboard" class="w-full h-full opacity-0 transition-opacity duration-700"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 sm:gap-6">
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.1)]">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+                <i class="fas fa-hospital-alt text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Faskes</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="dashSumFaskes">-</p>
+              </div>
+            </div>
+            <div class="glass-card p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.1)]">
+              <div class="w-14 h-14 rounded-[20px] bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/20 shrink-0">
+                <i class="fas fa-chart-pie text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Rata-Rata Metrik</p>
+                <p class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="dashSumAvg">-</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </nav>
 
-    </div> <!-- End of App Container -->
+      </main>
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="lg:hidden fixed bottom-0 w-full glass-card rounded-none rounded-t-[32px] border-b-0 border-l-0 border-r-0 shadow-[0_-10px_40px_rgba(15,23,42,0.1)] z-40 pb-safe">
+      <div class="flex justify-around items-center p-3">
+        <button onclick="switchTab('input')" id="mobile-tab-input" class="mobile-nav-item active flex-1 py-2 rounded-2xl">
+          <i class="fas fa-pen-to-square"></i>
+          <span>Entri</span>
+        </button>
+        <button onclick="switchTab('capaian')" id="mobile-tab-capaian" class="mobile-nav-item flex-1 py-2 rounded-2xl">
+          <i class="fas fa-bullseye"></i>
+          <span>Capaian</span>
+        </button>
+        <button onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-nav-item flex-1 py-2 rounded-2xl">
+          <i class="fas fa-chart-line"></i>
+          <span>Global</span>
+        </button>
+      </div>
+    </nav>
 
     <script>
       // ================= KONFIGURASI =================
@@ -452,24 +351,24 @@
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         
-        let icon = type === 'success' ? '<i class="fas fa-check-circle text-emerald-500 text-3xl"></i>' : 
-                   type === 'error' ? '<i class="fas fa-exclamation-circle text-red-500 text-3xl"></i>' : 
-                   '<i class="fas fa-info-circle text-blue-500 text-3xl"></i>';
+        let icon = type === 'success' ? '<i class="fas fa-check-circle text-emerald-500"></i>' : 
+                   type === 'error' ? '<i class="fas fa-exclamation-circle text-red-500"></i>' : 
+                   '<i class="fas fa-info-circle text-blue-500"></i>';
                    
-        toast.className = `glass-card p-5 sm:p-6 flex flex-col items-center text-center gap-3 shadow-[0_20px_50px_rgba(15,23,42,0.2)] transform transition-all duration-500 scale-75 opacity-0 max-w-sm w-full mx-auto pointer-events-auto`;
+        toast.className = `glass-card p-4 flex items-center justify-center gap-3 shadow-2xl transform transition-all duration-500 scale-90 opacity-0 w-full`;
         toast.innerHTML = `
-          <div>${icon}</div>
-          <div>
-            <h4 class="font-extrabold text-slate-900 text-lg">${title}</h4>
-            ${message ? `<p class="text-sm text-slate-500 mt-1 font-medium leading-relaxed">${message}</p>` : ''}
+          <div class="text-2xl drop-shadow-sm">${icon}</div>
+          <div class="text-left">
+            <h4 class="font-extrabold text-slate-800 text-sm tracking-wide">${title}</h4>
+            ${message ? `<p class="text-[11px] text-slate-500 mt-0.5 font-medium leading-tight">${message}</p>` : ''}
           </div>
         `;
         
         container.appendChild(toast);
-        setTimeout(() => { toast.classList.remove('scale-75', 'opacity-0'); toast.classList.add('scale-100', 'opacity-100'); }, 10);
+        setTimeout(() => { toast.classList.remove('scale-90', 'opacity-0'); toast.classList.add('scale-100', 'opacity-100'); }, 10);
         setTimeout(() => {
           toast.classList.remove('scale-100', 'opacity-100');
-          toast.classList.add('scale-75', 'opacity-0');
+          toast.classList.add('scale-90', 'opacity-0');
           setTimeout(() => toast.remove(), 500);
         }, 3000);
       }
@@ -484,32 +383,39 @@
         return letter;
       }
 
-      // ================= INIT & MOCKUP DATA =================
+      // ================= INIT & MOCKUP MODE =================
       document.addEventListener('DOMContentLoaded', function() {
-        const savedUserStr = localStorage.getItem('erakap_user_data');
-        if (savedUserStr) {
-           const userData = JSON.parse(savedUserStr);
-           if(userData.isAdmin) processLogin(userData.name, null, true);
-           else processLogin(userData.name, null, true);
-        }
+        const savedUser = localStorage.getItem('erakap_username');
+        if (savedUser) processLogin(savedUser, null, true);
       });
 
       function generateMockData(username) {
-        let isAdm = username.toLowerCase() === "admin dinas" || username.toLowerCase() === "admin";
-        if(isAdm) {
-          return { name: username, wilayah: "Otoritas Pusat", history: [], nextWeek: 1, isAdmin: true };
-        }
-        return { name: username, wilayah: "Kota Malang", history: [45, 0, 48, 60, 0, 65], nextWeek: 7, isAdmin: false };
+        return { 
+          name: username, wilayah: "Kota Malang", isAdmin: false,
+          history: [
+            {terlambat: 45, waKirim: 40, waRespon: 30, datang: 20},
+            {terlambat: 50, waKirim: 45, waRespon: 35, datang: 25}
+          ], 
+          nextWeek: 3 
+        };
       }
 
       function generateGlobalMockData() {
         return {
-          headers: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 'Minggu 5', 'Minggu 6', 'Minggu 7', 'Minggu 8'],
+          headers: ['Minggu 1', 'Minggu 2'],
           records: [
-            { wilayah: 'Kota Malang', puskesmas: 'Puskesmas A', values: [45, 0, 48, 60, 0, 65, 70, 75] },
-            { wilayah: 'Kota Malang', puskesmas: 'Puskesmas Sentosa', values: [30, 0, 40, 0, 45, 50, 0, 60] },
-            { wilayah: 'Kabupaten Malang', puskesmas: 'Puskesmas Bakti', values: [60, 58, 62, 0, 68, 72, 70, 0] },
-            { wilayah: 'Kabupaten Malang', puskesmas: 'Puskesmas Sehat', values: [50, 55, 0, 62, 60, 68, 0, 80] }
+            { wilayah: 'Kota Malang', puskesmas: (currentUser ? currentUser.name : 'Puskesmas A'), values: [
+              {terlambat: 45, waKirim: 40, waRespon: 30, datang: 20},
+              {terlambat: 50, waKirim: 45, waRespon: 35, datang: 25}
+            ]},
+            { wilayah: 'Kota Malang', puskesmas: 'Puskesmas Sentosa', values: [
+              {terlambat: 30, waKirim: 20, waRespon: 10, datang: 5},
+              {terlambat: 35, waKirim: 25, waRespon: 15, datang: 10}
+            ]},
+            { wilayah: 'Kabupaten Malang', puskesmas: 'Puskesmas Sehat', values: [
+              {terlambat: 60, waKirim: 55, waRespon: 40, datang: 30},
+              {terlambat: 65, waKirim: 60, waRespon: 45, datang: 35}
+            ]}
           ]
         };
       }
@@ -531,19 +437,16 @@
         fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}`)
           .then(res => res.json())
           .then(res => {
-            if (btn) {
-              btn.disabled = false;
-              btn.innerHTML = '<span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>';
-            }
+            if (btn) btn.innerHTML = '<span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>';
             if (res.success) {
               setupAppUI(res.data, isSilent);
             } else {
               if(!isSilent) showToast('error', 'Akses Ditolak', res.message);
-              localStorage.removeItem('erakap_user_data');
+              if (btn) btn.disabled = false;
+              localStorage.removeItem('erakap_username');
             }
           })
           .catch(err => {
-            console.log("Koneksi gagal, beralih ke Mode Simulasi");
             if (btn) {
               btn.disabled = false;
               btn.innerHTML = '<span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>';
@@ -551,15 +454,13 @@
             if (username) {
               const mock = generateMockData(username);
               setupAppUI(mock, false);
-              if(mock.isAdmin) showToast('info', 'Mode Pratinjau Admin', 'Anda login sebagai Admin (Simulasi).');
-              else showToast('info', 'Mode Pratinjau', 'Terkoneksi menggunakan data simulasi.');
             }
           });
       }
 
       function setupAppUI(data, isSilent) {
         currentUser = data;
-        localStorage.setItem('erakap_user_data', JSON.stringify(currentUser));
+        localStorage.setItem('erakap_username', currentUser.name);
         
         document.getElementById('sidebar-username').innerText = currentUser.name;
         document.getElementById('sidebar-wilayah').innerText = currentUser.wilayah;
@@ -573,80 +474,37 @@
           document.getElementById('app-container').classList.add('flex');
           
           if(currentUser.isAdmin) {
-            document.getElementById('tab-input').classList.add('hidden');
-            document.getElementById('tab-capaian').classList.add('hidden');
-            document.getElementById('mobile-nav').classList.add('hidden');
-            
-            switchTab('dashboard');
+             loadGlobalDashboard("", true);
           } else {
-            setupEntriForm();
-            executeSwitchTab('input');
+             setupEntriForm();
+             executeSwitchTab('input');
           }
         }, 600);
       }
 
       function doLogout() {
-        localStorage.removeItem('erakap_user_data');
-        currentUser = null;
-        
-        document.getElementById('app-container').classList.remove('flex');
+        localStorage.removeItem('erakap_username');
         document.getElementById('app-container').classList.add('hidden');
+        document.getElementById('app-container').classList.remove('flex');
         
         const loginView = document.getElementById('view-login');
         loginView.classList.remove('hidden');
         setTimeout(() => {
           loginView.classList.remove('opacity-0', 'pointer-events-none');
-        }, 50);
-
-        document.getElementById('login-username').value = '';
-        
-        document.getElementById('tab-input').classList.remove('hidden');
-        document.getElementById('tab-capaian').classList.remove('hidden');
-        document.getElementById('mobile-nav').classList.remove('hidden');
-        document.getElementById('submenu-wilayah').classList.add('hidden');
-        document.getElementById('icon-chevron-dash').classList.remove('rotate-180', 'opacity-100');
-      }
-
-      // ================= MANAJEMEN LOADING OVERLAY =================
-      let loadingTextTimer = null;
-      function showLoadingOverlay() {
-        const overlay = document.getElementById('global-loading-overlay');
-        const textEl = document.getElementById('loading-overlay-text');
-        overlay.classList.remove('pointer-events-none', 'opacity-0');
-        overlay.classList.add('opacity-100');
-
-        const phrases = [
-          "Menghubungkan ke secure server...",
-          "Memverifikasi token otorisasi...",
-          "Mengunduh data klasifikasi faskes...",
-          "Menyinkronkan grafik komparatif...",
-          "Membuka portal otoritas..."
-        ];
-        
-        let i = 0;
-        textEl.innerText = phrases[0];
-        loadingTextTimer = setInterval(() => {
-          i = (i + 1) % phrases.length;
-          textEl.innerText = phrases[i];
-        }, 900);
-      }
-
-      function hideLoadingOverlay() {
-        const overlay = document.getElementById('global-loading-overlay');
-        overlay.classList.remove('opacity-100');
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-        clearInterval(loadingTextTimer);
+          const btn = document.getElementById('btn-login');
+          if(btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Masuk Portal</span> <i class="fas fa-arrow-right text-sm"></i>';
+          }
+          document.getElementById('login-username').value = '';
+          currentUser = null;
+        }, 100);
       }
 
       // ================= MENU TAB & KEAMANAN DASHBOARD =================
       function switchTab(tab) {
-        if (tab === 'dashboard') {
-          if (currentUser && currentUser.isAdmin) {
-             loadGlobalDashboard("", true); 
-          } else {
-             if(globalDashboardDataRaw) executeSwitchTab(tab);
-             else promptGlobalPassword();
-          }
+        if (tab === 'dashboard' && !currentUser.isAdmin && !globalDashboardDataRaw) {
+          promptGlobalPassword();
           return; 
         }
         executeSwitchTab(tab);
@@ -685,16 +543,15 @@
         if(tab === 'capaian' && currentUser) setTimeout(renderChartCapaian, 100);
       }
 
-      // FIX: Verifikasi Username Admin untuk Akses Global View
       function promptGlobalPassword() {
         if (typeof Swal !== 'undefined') {
           Swal.fire({
-            title: 'Verifikasi Otoritas',
+            title: 'Verifikasi Keamanan',
             html: `
-              <p class="text-sm text-slate-500 font-medium mb-4">Silakan masukkan <b>Username Admin</b> untuk membuka akses Global View.</p>
-              <input type="text" id="custom-swal-pass" class="w-full px-5 py-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none text-center text-xl font-bold text-slate-800 bg-white shadow-inner transition-all" placeholder="Ketik username admin..." autocomplete="off">
+              <p class="text-sm text-slate-500 font-medium mb-4">Silakan ketik ulang <b>Username</b> Anda untuk membuka Global View.</p>
+              <input type="text" id="custom-swal-pass" class="w-full px-5 py-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none text-center text-xl font-bold text-slate-800 bg-white shadow-inner transition-all" placeholder="Ketik username Anda..." autocomplete="off">
             `,
-            iconHtml: '<i class="fas fa-user-shield text-blue-500 text-3xl"></i>',
+            iconHtml: '<i class="fas fa-user-lock text-blue-500 text-3xl"></i>',
             customClass: {
               icon: 'border-none w-16 h-16 bg-blue-50 mx-auto rounded-full flex items-center justify-center mb-2 shadow-inner',
               popup: 'glass-card rounded-[28px] border border-white/80 p-6 sm:p-8 max-w-sm shadow-[0_20px_50px_rgba(15,23,42,0.25)]',
@@ -703,6 +560,7 @@
               cancelButton: 'w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl transition-all mt-2',
               actions: 'w-full flex flex-col gap-0'
             },
+            backdrop: `rgba(15, 23, 42, 0.4) backdrop-filter backdrop-blur-md`,
             buttonsStyling: false,
             showCancelButton: true,
             confirmButtonText: 'Verifikasi & Buka <i class="fas fa-unlock ml-2 text-sm"></i>',
@@ -714,68 +572,80 @@
               });
             },
             preConfirm: () => {
-              const pass = document.getElementById('custom-swal-pass').value;
-              return pass;
+              return document.getElementById('custom-swal-pass').value;
             }
           }).then((result) => {
             if (result.isConfirmed) {
-              const inputAdminUser = result.value.trim();
-              // Kirim ke backend sebagai password verifikasi
-              loadGlobalDashboard(inputAdminUser, false); 
+              const inputUser = result.value.trim().toLowerCase();
+              if (inputUser === currentUser.name.toLowerCase()) {
+                loadGlobalDashboard("", true); 
+              } else {
+                showToast('error', 'Akses Ditolak', 'Username yang diketik salah.');
+              }
             }
           });
         } else {
-          let pass = prompt("Silakan masukkan Username Admin:");
+          let pass = prompt("Silakan ketik ulang Username Anda:");
           if (pass !== null) {
-             loadGlobalDashboard(pass.trim(), false);
+            if (pass.trim().toLowerCase() === currentUser.name.toLowerCase()) {
+               loadGlobalDashboard("", true);
+            } else {
+               showToast('error', 'Akses Ditolak', 'Username yang diketik salah.');
+            }
           }
         }
       }
 
       // ================= FORM ENTRI =================
       function setupEntriForm() {
-        if(currentUser.isAdmin) return; 
-        
         const selectEl = document.getElementById('form-week-select');
         selectEl.innerHTML = '';
         
         currentUser.history.forEach((val, i) => {
-          let label = val === 0 ? "Kosong (0)" : `Terisi: ${val}`;
+          let label = `T:${val.terlambat}|W:${val.waKirim}|R:${val.waRespon}|D:${val.datang}`;
           const opt = new Option(`Minggu ke-${i+1} (${label})`, i+1);
-          opt.dataset.val = val === 0 ? '' : val; 
+          opt.dataset.t = val.terlambat;
+          opt.dataset.wk = val.waKirim;
+          opt.dataset.wr = val.waRespon;
+          opt.dataset.d = val.datang;
           selectEl.appendChild(opt);
         });
         
         const newOpt = new Option(`➕ Minggu ke-${currentUser.nextWeek} (Laporan Baru)`, currentUser.nextWeek);
-        newOpt.dataset.val = '';
         selectEl.appendChild(newOpt);
         selectEl.value = currentUser.nextWeek;
         onWeekSelectChange();
       }
 
       function onWeekSelectChange() {
-        if(currentUser.isAdmin) return;
-
         const selectEl = document.getElementById('form-week-select');
         const selectedOpt = selectEl.options[selectEl.selectedIndex];
         const weekNum = Number(selectEl.value);
         
-        const nilaiInput = document.getElementById('form-nilai');
         const btnText = document.getElementById('btn-submit-text');
         const btn = document.getElementById('btn-submit-data');
         const colInfo = document.getElementById('form-col-info');
         
-        const colLetter = getColumnLetter(weekNum + 2); 
-        colInfo.innerText = `(Kolom ${colLetter})`;
+        const startCol = (weekNum - 1) * 4 + 3;
+        const endCol = startCol + 3;
+        colInfo.innerText = `(Kolom ${getColumnLetter(startCol)} - ${getColumnLetter(endCol)})`;
 
-        if (weekNum === currentUser.nextWeek || selectedOpt.dataset.val === '') {
-          nilaiInput.value = selectedOpt.dataset.val;
+        if (weekNum === currentUser.nextWeek || selectedOpt.dataset.t === undefined) {
+          document.getElementById('form-terlambat').value = '';
+          document.getElementById('form-wa-kirim').value = '';
+          document.getElementById('form-wa-respon').value = '';
+          document.getElementById('form-datang').value = '';
+          
           btnText.innerText = 'Simpan Laporan Baru';
-          btn.className = "w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-[0_10px_30px_rgba(37,99,235,0.4)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20";
+          btn.className = "w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20";
         } else {
-          nilaiInput.value = selectedOpt.dataset.val;
+          document.getElementById('form-terlambat').value = selectedOpt.dataset.t;
+          document.getElementById('form-wa-kirim').value = selectedOpt.dataset.wk;
+          document.getElementById('form-wa-respon').value = selectedOpt.dataset.wr;
+          document.getElementById('form-datang').value = selectedOpt.dataset.d;
+          
           btnText.innerText = 'Perbarui Data Lama';
-          btn.className = "w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-4 rounded-2xl shadow-[0_10px_30px_rgba(245,158,11,0.4)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20";
+          btn.className = "w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-4 rounded-2xl shadow-[0_10px_20px_rgba(245,158,11,0.3)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg mt-8 border border-white/20";
         }
       }
 
@@ -783,17 +653,27 @@
         e.preventDefault();
         const btn = document.getElementById('btn-submit-data');
         const originalHtml = btn.innerHTML;
-        const nilai = document.getElementById('form-nilai').value;
-        const weekNum = document.getElementById('form-week-select').value;
         
-        if(!nilai) return;
+        const weekNum = document.getElementById('form-week-select').value;
+        const t = document.getElementById('form-terlambat').value;
+        const wk = document.getElementById('form-wa-kirim').value;
+        const wr = document.getElementById('form-wa-respon').value;
+        const d = document.getElementById('form-datang').value;
+        
+        if(!t || !wk || !wr || !d) {
+            showToast('error', 'Perhatian', 'Semua metrik wajib diisi.');
+            return;
+        }
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-circle-notch loader-spin text-xl"></i> <span>Memproses...</span>';
 
         fetch(SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'saveData', puskesmas: currentUser.name, nilai: nilai, weekNum: weekNum }),
+          body: JSON.stringify({ 
+            action: 'saveData', puskesmas: currentUser.name, weekNum: weekNum,
+            terlambat: t, waKirim: wk, waRespon: wr, datang: d
+          }),
           headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
         .then(res => res.json())
@@ -801,7 +681,6 @@
           btn.disabled = false;
           btn.innerHTML = originalHtml;
           if(res.success) {
-            showToast('success', 'Tersimpan', res.message);
             processLogin(currentUser.name, null, true); 
           } else showToast('error', 'Gagal', res.message);
         }).catch(err => {
@@ -809,33 +688,32 @@
             btn.disabled = false;
             btn.innerHTML = originalHtml;
             
+            const newData = { terlambat: Number(t), waKirim: Number(wk), waRespon: Number(wr), datang: Number(d) };
             if (Number(weekNum) === currentUser.nextWeek) {
-              currentUser.history.push(Number(nilai));
+              currentUser.history.push(newData);
               currentUser.nextWeek++;
             } else {
-              currentUser.history[Number(weekNum) - 1] = Number(nilai);
+              currentUser.history[Number(weekNum) - 1] = newData;
             }
             
             setupEntriForm();
-            showToast('success', 'Disimpan (Mode Simulasi)', 'Data berhasil diubah secara lokal.');
           }, 800);
         });
       }
 
       // ================= CAPAIAN INDIVIDU =================
       function renderChartCapaian() {
-        if (!currentUser || currentUser.isAdmin) return;
+        if (!currentUser) return;
         const ctx = document.getElementById('chartCapaian').getContext('2d');
-        const dataValues = currentUser.history;
-        const labels = dataValues.map((_, i) => `Mg ${i+1}`);
+        const labels = currentUser.history.map((_, i) => `Mg ${i+1}`);
 
-        document.getElementById('capSumMinggu').innerText = dataValues.filter(v => v > 0).length;
-        const activeVals = dataValues.filter(v => v > 0);
-        document.getElementById('capSumAkhir').innerText = activeVals.length > 0 ? activeVals[activeVals.length - 1] : 0;
+        const dataT = currentUser.history.map(v => v.terlambat);
+        const dataWk = currentUser.history.map(v => v.waKirim);
+        const dataWr = currentUser.history.map(v => v.waRespon);
+        const dataD = currentUser.history.map(v => v.datang);
 
-        let gradArea = ctx.createLinearGradient(0, 0, 0, 400);
-        gradArea.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-        gradArea.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+        document.getElementById('capSumMinggu').innerText = currentUser.history.length;
+        document.getElementById('capSumAkhir').innerText = dataD.length > 0 ? dataD[dataD.length - 1] : 0;
 
         if (chartCapaianInst) chartCapaianInst.destroy();
 
@@ -843,27 +721,20 @@
           type: 'line',
           data: {
             labels: labels,
-            datasets: [{
-              label: 'Capaian Kinerja',
-              data: dataValues,
-              borderColor: '#3b82f6',
-              backgroundColor: gradArea,
-              borderWidth: 4,
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#3b82f6',
-              pointBorderWidth: 3,
-              pointRadius: 5,
-              pointHoverRadius: 8,
-              fill: true,
-              tension: 0.4
-            }]
+            datasets: [
+              { label: 'Terlambat', data: dataT, borderColor: '#ef4444', backgroundColor: 'transparent', borderWidth: 3, pointRadius: 4, pointHoverRadius: 6, tension: 0.4 },
+              { label: 'WA Kirim', data: dataWk, borderColor: '#3b82f6', backgroundColor: 'transparent', borderWidth: 3, pointRadius: 4, pointHoverRadius: 6, tension: 0.4 },
+              { label: 'WA Respon', data: dataWr, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 3, pointRadius: 4, pointHoverRadius: 6, tension: 0.4 },
+              { label: 'Datang', data: dataD, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointRadius: 4, pointHoverRadius: 6, tension: 0.4 }
+            ]
           },
           options: {
             responsive: true, maintainAspectRatio: false, 
             animation: { y: { duration: 1500, easing: 'easeOutElastic' } },
+            interaction: { mode: 'index', intersect: false },
             plugins: { 
-              legend: { display: false }, 
-              tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', padding: 14, cornerRadius: 12 } 
+              legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: {weight: 'bold'} } }, 
+              tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', padding: 14, cornerRadius: 12, titleFont: {size: 14}, bodySpacing: 6 } 
             },
             scales: { 
               y: { beginAtZero: true, min: 0, grid: { color: 'rgba(0, 0, 0, 0.04)' }, border: { dash: [4,4] } }, 
@@ -874,8 +745,9 @@
       }
 
       // ================= DASHBOARD GLOBAL =================
-      function loadGlobalDashboard(password, isBypass) {
-        showLoadingOverlay();
+      function loadGlobalDashboard(password, isBypass = false) {
+        document.getElementById('globalChartLoading').classList.remove('hidden');
+        document.getElementById('chartDashboard').classList.add('opacity-0');
         
         let url = `${SCRIPT_URL}?action=getGlobalDashboard`;
         if (isBypass) url += `&skipPassword=true`;
@@ -885,77 +757,81 @@
           .then(res => res.json())
           .then(res => {
              if(res.success) {
-               setTimeout(() => {
-                 hideLoadingOverlay();
-                 globalDashboardDataRaw = res.payload;
-                 executeSwitchTab('dashboard'); 
-                 populateWilayahFilter(globalDashboardDataRaw.records);
-                 renderGlobalChart('ALL');
-                 if(!isBypass) showToast('success', 'Akses Dibuka', 'Selamat datang di Global View');
-               }, 1200); 
+               globalDashboardDataRaw = res.payload;
+               executeSwitchTab('dashboard'); 
+               populateWilayahFilter(globalDashboardDataRaw.records);
+               renderGlobalChart();
              } else {
-               hideLoadingOverlay();
+               document.getElementById('globalChartLoading').classList.add('hidden');
                showToast('error', 'Akses Ditolak', res.message);
              }
           })
           .catch(err => {
              setTimeout(() => {
-               if (isBypass || password.toLowerCase() === 'admin dinas' || password.toLowerCase() === 'admin' || password === '') {
-                 hideLoadingOverlay();
                  globalDashboardDataRaw = generateGlobalMockData();
                  executeSwitchTab('dashboard'); 
                  populateWilayahFilter(globalDashboardDataRaw.records);
-                 renderGlobalChart('ALL');
-                 if(!isBypass) showToast('success', 'Akses Simulasi Dibuka', 'Otoritas Admin Terverifikasi (Mode Simulasi)');
-               } else {
-                 hideLoadingOverlay();
-                 showToast('error', 'Akses Ditolak', 'Username Admin tidak sesuai! (Coba: admin dinas)');
-               }
-             }, 2200); 
+                 renderGlobalChart();
+             }, 800);
           });
       }
 
       function populateWilayahFilter(records) {
+        // Populasikan untuk Mobile Select
         const mobileSelect = document.getElementById('dash-filter-wilayah');
-        const desktopSubmenu = document.getElementById('submenu-wilayah');
+        mobileSelect.innerHTML = '<option value="ALL">🌍 Semua Wilayah</option>';
         
-        mobileSelect.innerHTML = '<option value="ALL">🌍 Tampilkan Semua Wilayah</option>';
-        desktopSubmenu.innerHTML = '<button onclick="applyGlobalFilter(\'ALL\')" class="submenu-item active w-full text-left text-xs font-bold py-2 px-3 rounded-xl transition-all shadow-sm mb-1">🌍 Tampilkan Semua Wilayah</button>';
+        // Populasikan untuk Desktop Sidebar Submenu
+        const desktopSubmenu = document.getElementById('submenu-wilayah');
+        desktopSubmenu.innerHTML = `
+          <button onclick="applyGlobalFilter('ALL')" id="filter-desk-ALL" class="text-left w-full px-3 py-2 text-sm font-bold text-blue-600 bg-blue-50 rounded-lg transition-colors shadow-sm">🌍 Semua Wilayah</button>
+        `;
         
         const wilayahSet = new Set();
         records.forEach(r => wilayahSet.add(r.wilayah));
         
         wilayahSet.forEach(w => {
+           // Mobile
            mobileSelect.appendChild(new Option(`📍 ${w}`, w));
-           desktopSubmenu.innerHTML += `<button onclick="applyGlobalFilter('${w}')" class="submenu-item w-full text-left text-xs font-bold py-2 px-3 rounded-xl transition-all mb-1">📍 ${w}</button>`;
+           // Desktop
+           desktopSubmenu.innerHTML += `
+             <button onclick="applyGlobalFilter('${w}')" id="filter-desk-${w.replace(/\s+/g, '-')}" class="text-left w-full px-3 py-2 text-sm font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors">📍 ${w}</button>
+           `;
         });
       }
 
-      function applyGlobalFilter(wilayahParameter) {
-        let filterVal = wilayahParameter;
+      function applyGlobalFilter(wilayahClicked = null) {
+        let wilayahFilter = "ALL";
         
-        if (!filterVal) {
-          filterVal = document.getElementById('dash-filter-wilayah').value;
+        // Cek darimana pemicunya (Desktop Submenu vs Mobile Select)
+        if (wilayahClicked !== null) {
+           wilayahFilter = wilayahClicked;
+           // Update Select di Mobile agar sinkron
+           document.getElementById('dash-filter-wilayah').value = wilayahFilter;
+           
+           // Update styling Desktop Submenu
+           const buttons = document.getElementById('submenu-wilayah').querySelectorAll('button');
+           buttons.forEach(btn => {
+              btn.className = "text-left w-full px-3 py-2 text-sm font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors";
+           });
+           const activeBtn = document.getElementById(`filter-desk-${wilayahFilter.replace(/\s+/g, '-')}`);
+           if(activeBtn) activeBtn.className = "text-left w-full px-3 py-2 text-sm font-bold text-blue-600 bg-blue-50 rounded-lg transition-colors shadow-sm";
         } else {
-          document.getElementById('dash-filter-wilayah').value = filterVal;
+           // Jika dipicu dari Mobile Select
+           wilayahFilter = document.getElementById('dash-filter-wilayah').value;
         }
 
-        document.querySelectorAll('.submenu-item').forEach(btn => {
-           btn.classList.remove('active', 'shadow-sm');
-           if (btn.innerText.includes(filterVal === 'ALL' ? 'Semua' : filterVal)) {
-             btn.classList.add('active', 'shadow-sm');
-           }
-        });
-
-        renderGlobalChart(filterVal);
+        renderGlobalChart(wilayahFilter);
       }
 
-      function renderGlobalChart(wilayahFilter) {
+      function renderGlobalChart(wilayahFilter = "ALL") {
+        document.getElementById('globalChartLoading').classList.add('hidden');
         const canvas = document.getElementById('chartDashboard');
         canvas.classList.remove('opacity-0');
         
         const ctx = canvas.getContext('2d');
         const labels = globalDashboardDataRaw.headers.map(h => h.replace('Minggu', 'Mg'));
+        const selectedMetric = document.getElementById('dash-filter-metric').value;
         
         let datasets = [];
         let grandTotal = 0;
@@ -967,7 +843,8 @@
         filteredRecords.forEach((record, index) => {
           puskCount++;
           const color = paletteColors[index % paletteColors.length];
-          const dataValues = record.values;
+          // Ektrak metrik yang dipilih (terlambat/waKirim/waRespon/datang)
+          const dataValues = record.values.map(v => v[selectedMetric]);
           
           datasets.push({
             label: record.puskesmas,
